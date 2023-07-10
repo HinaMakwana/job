@@ -1,0 +1,38 @@
+{
+	"options" : [
+		{"value": "Assistant","label":"Assistant"},
+		{"value": "Associate","label":"Associate"},
+		{"value": "Administrative Assistant","label":"Administrative Assistant"},
+		{"value": "Account Manager","label":"Account Manager"},
+		{"value": "Accountant","label":"Accountant"},
+		{"value": "Analyst","label":"Analyst"},
+		{"value": "Administrative clerk","label":"Administrative clerk"},
+		{"value": "Business owner","label":"Business owner"},
+		{"value": "Business Specialist","label":"Business Specialist"},
+		{"value": "Business Professional","label":"Business Professional"},
+		{"value": "Budget Accountant","label":"Budget Accountant"},
+		{"value": "Bank Accountant","label":"Bank Accountant"},
+		{"value": "Business Development Specialist","label":"Business Development Specialist"},
+		{"value": "Board Member","label":"Board Member"},
+		{"value": "Company Owner","label":"Company Owner"},
+		{"value": "c++ Developer","label":"c++ Developer"}
+	],
+	"options1" : [
+		{"value": "Assistant","label":"Assistant"},
+		{"value": "Associate","label":"Associate"},
+		{"value": "Administrative Assistant","label":"Administrative Assistant"},
+		{"value": "Account Manager","label":"Account Manager"},
+		{"value": "Accountant","label":"Accountant"},
+		{"value": "Analyst","label":"Analyst"},
+		{"value": "Administrative clerk","label":"Administrative clerk"},
+		{"value": "Business owner","label":"Business owner"},
+		{"value": "Business Specialist","label":"Business Specialist"},
+		{"value": "Business Professional","label":"Business Professional"},
+		{"value": "Budget Accountant","label":"Budget Accountant"},
+		{"value": "Bank Accountant","label":"Bank Accountant"},
+		{"value": "Business Development Specialist","label":"Business Development Specialist"},
+		{"value": "Board Member","label":"Board Member"},
+		{"value": "Company Owner","label":"Company Owner"},
+		{"value": "c++ Developer","label":"c++ Developer"}
+	]
+}

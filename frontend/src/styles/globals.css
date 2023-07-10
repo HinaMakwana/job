@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@media (max-width:768px) {
+    #section1 {
+        flex-direction: column;
+    }
+    #form {
+        margin: auto;
+        margin-top: 30px;
+    }
+    #article {
+        flex-direction: column;
+        padding: 30px;
+    }
+    #job {
+        flex-direction: column;
+        padding: 30px;
+    }
+    #post {
+        flex-direction: column;
+        padding: 30px;
+    }
+    #carousel {
+        padding: 30px;
+    }
+    #item {
+
+    }
+}
+
+@media (max-width:1024px) {
+    #article {
+        flex-direction: column;
+        padding: 30px;
+        padding-left: 80px;
+    }
+    #job {
+        flex-direction: column;
+        padding: 30px;
+        padding-left: 80px;
+    }
+    #post {
+        flex-direction: column;
+        padding: 30px;
+        padding-left: 80px;
+    }
+    #carousel {
+        padding: 30px;
+    }
+}
+
+@media (max-width:550px) {
+    #article {
+        padding-left: 0px;
+    }
+    #job {
+        padding-left: 0px;
+    }
+    #post {
+        padding-left: 0px;
+    }
+    #carousel {
+        padding: 0px;
+    }
+    #item {
+        flex-direction: column-reverse;
+    }
+    #item img {
+        margin-left: 100px;
+    }
+    #item span {
+        font-size: xx-large;
+    }
+    #item p {
+        font-size: large;
+    }
+}
