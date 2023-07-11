@@ -19,7 +19,7 @@ export default function Signup() {
         const a = await fetch('http://localhost:1337/user/login',{
             method: 'POST',
             headers :{
-                'Content-Type' :'application/json'
+                // 'Content-Type' :'application/json'
                 },
             body: JSON.stringify(form)
         })
@@ -33,6 +33,12 @@ export default function Signup() {
         if(a.status === 200) {
             alert('Login successfully')
             if(content.role == 'manager') {
+                setCookie("authToken",content.token,{
+                    path: '/',
+                    maxAge: 3600,
+                    sameSite: true,
+                    secure: true
+                  })
                 router.push('post')
             } else {
                 router.push('apply')
@@ -43,7 +49,6 @@ export default function Signup() {
             alert('Server error')
         }
 	}
-
         return (
         <section className='flex' id='section1'>
             <div className='basis-1/2 xl:pl-44 md:pl-20 mt-20 sm:pl-0' id='form'>

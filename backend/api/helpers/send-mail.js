@@ -9,10 +9,16 @@ module.exports = {
 
 
   inputs: {
+    managerEmail : {
+      type : 'string'
+    },
     email : {
       type : 'string'
     },
     firstName : {
+      type : 'string'
+    },
+    title : {
       type : 'string'
     }
   },
@@ -28,7 +34,7 @@ module.exports = {
 
 
   fn: async function (inputs) {
-    console.log(1);
+    console.log(inputs);
     const mail = inputs.email;
     let transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
@@ -36,13 +42,12 @@ module.exports = {
       auth: { user: "f92a35a294cae1", pass: "11e4263e3c726e" }
     });
     let message  = {
-      from : '"zignuts" <zignuts@gmail.com>',
-      to : mail,
-      subject : "testing",
-      text : "Hello",
-      html : "welcome to zignuts " + inputs.firstName + "<br><button>Verify account</button>"
+      from : mail,
+      to : `${inputs.managerEmail}`,
+      subject : "application for job",
+      // text : "Hello",
+      html : `${inputs.firstName} candidate is apply for ${inputs.title}`
   }
     transport.sendMail(message)
   }
 }
-

@@ -21,5 +21,8 @@ module.exports.routes = {
     'PATCH /job/update' : 'JobController.updateJob',
     'DELETE /job/delete' : 'JobController.deleteJob',
     'GET /job' : 'JobController.listAllJob',
-    'GET /job/list' : 'JobController.listJob'
+    'GET /job/list' : 'JobController.listJob',
+    'POST /job/search' : 'JobController.searchJob',
+    'POST /job/listone' : 'JobController.listOne',
+    'POST /apply' : 'JobController.applyJob'
 };

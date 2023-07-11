@@ -24,6 +24,7 @@ module.exports.policies = {
     uploadImage : 'isAuthorized'
   },
   JobController : {
+    listAllJob:true,
     '*' : 'isAuthorized'
   }
 

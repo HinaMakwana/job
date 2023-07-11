@@ -32,7 +32,7 @@ function Auth() {
             const a = await fetch('http://localhost:1337/user/signup',{
                 method: 'POST',
                 headers :{
-                    'Content-Type' :'application/json'
+                    // 'Content-Type' :'application/json'
                   },
                 body: JSON.stringify({...form,role:selectedOption.value})
             })
@@ -41,6 +41,7 @@ function Auth() {
 
             if(a.status === 201) {
                 alert('Successfully register')
+                router.push('signup')
             } else if(a.status == 409) {
                 alert('User already exist..')
             } else if(a.status === 500) {

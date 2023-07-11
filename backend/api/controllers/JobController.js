@@ -19,7 +19,7 @@ module.exports = {
       const user = await sails.helpers.commonFun(userId);
       let {title, company,workplaceType,jobLocation,jobType,description} = req.body
       if(user.role == 'manager') {
-        let findTitle = await Job.findOne({title: title, isDeleted: false})
+        let findTitle = await Job.findOne({title: title, isDeleted: false,postedBy: userId})
         if(findTitle) {
           return res.status(Statuscode.CONFLICT).json({
             status: Statuscode.CONFLICT,
@@ -36,6 +36,7 @@ module.exports = {
           postedBy : user.id,
           description : description
         }
+        console.log(data);
         let postJob = await Job.create(data).fetch()
         return res.status(Statuscode.CREATED).json({
           status: Statuscode.CREATED,
@@ -49,6 +50,7 @@ module.exports = {
           })
         }
     } catch (error) {
+      console.log(error);
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
         msg: "Server Error!" + error
@@ -124,9 +126,9 @@ module.exports = {
    * @route (GET job)
    */
   listAllJob: async (req,res) => {
-    const userId = req.userData.userId
+    // const userId = req.userData.userId
     try {
-      const user = await sails.helpers.commonFun(userId)
+      // const user = await sails.helpers.commonFun(userId)
       let allJobs = await Job.find({isDeleted:false}).populate('postedBy')
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
@@ -163,6 +165,110 @@ module.exports = {
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
         List: allJobs
+      })
+    } catch (error) {
+      return res.status(Statuscode.SERVER_ERROR).json({
+        status: Statuscode.SERVER_ERROR,
+        msg: "Server Error"
+      })
+    }
+  },
+  /**
+   * @description listOne job post
+   * @route (POST job/listone)
+   */
+  listOne: async (req,res) => {
+    const userId = req.userData.userId
+    try {
+      let {id} = req.body
+      const user = await sails.helpers.commonFun(userId)
+      if(user.role === 'client'){
+        let getOneJob = await Job.findOne({id:id}).populate('postedBy')
+        console.log(1);
+        if(!getOneJob) {
+          return res.status(Statuscode.NOT_FOUND).json({
+            status: Statuscode.NOT_FOUND,
+            message: 'post not found'
+          })
+        }
+        return res.status(Statuscode.OK).json({
+          status: Statuscode.OK,
+          data: getOneJob
+        })
+      } else {
+        return res.status(Statuscode.SERVER_ERROR).json({
+          status: Statuscode.SERVER_ERROR,
+          message: "Server Error"
+        })
+      }
+    } catch (error) {
+      return res.status(Statuscode.SERVER_ERROR).json({
+        status: Statuscode.SERVER_ERROR,
+        message: "Server Error" + error
+      })
+    }
+  },
+  /**
+   * @description search job
+   * @route (POST job/search)
+   */
+  searchJob: async (req,res) => {
+    const userId = req.userData.userId
+    try {
+      let {title} = req.body
+      let user = await sails.helpers.commonFun(userId)
+      if(user.role === 'client') {
+        query = `SELECT * FROM "job"
+                  WHERE lower(title) LIKE '%' || lower($1) || '%'
+                  AND "isDeleted" = false`
+        const search = await sails.sendNativeQuery(query, [title])
+        // const search = await Job.find({where: {
+        //   title: {'ilike' : '%' + title + '%'},
+        //   isDeleted : false
+        // }})
+        // const search = await Job.find({
+        //   where: {
+        //     title: {'contains': title},
+        //     isDeleted: false
+        //   }
+        // });
+        return res.status(Statuscode.OK).json({
+          status: Statuscode.OK,
+          data: search
+        })
+      } else {
+        return res.status(Statuscode.SERVER_ERROR).json({
+          status: Statuscode.SERVER_ERROR,
+          msg: "Server Error"
+        })
+      }
+    } catch (error) {
+      return res.status(Statuscode.SERVER_ERROR).json({
+        status: Statuscode.SERVER_ERROR,
+        msg: "Server Error"
+      })
+    }
+  },
+  /**
+   * @description apply for job
+   * @route (POST apply)
+   */
+  applyJob: async (req,res) => {
+    const userId = req.userData.userId
+    try {
+      const {managerEmail,postId} = req.body
+      let findPost = await Job.findOne({id:postId})
+      if(!findPost) {
+        return res.status(Statuscode.NOT_FOUND).json({
+          status: Statuscode.NOT_FOUND,
+          message: 'Not found'
+        })
+      }
+      const user = await sails.helpers.commonFun(userId)
+      await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
+      return res.status(Statuscode.OK).json({
+        status: Statuscode.OK,
+        message: 'email send'
       })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
