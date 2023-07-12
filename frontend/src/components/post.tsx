@@ -11,7 +11,7 @@ export default function Post() {
                     <div className="flex flex-wrap gap-3">
                         <div>
                             <Button className="bg-transparent text-blue-600 border-2 border-blue-600 rounded-full w-28 h-12 hover:text-white hover:border-transparent">
-                                Post a job
+                                <a href="auth">Post a job</a>
                             </Button>
                         </div>
                     </div>

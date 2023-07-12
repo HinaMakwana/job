@@ -126,10 +126,15 @@ module.exports = {
    * @route (GET job)
    */
   listAllJob: async (req,res) => {
-    // const userId = req.userData.userId
     try {
-      // const user = await sails.helpers.commonFun(userId)
-      let allJobs = await Job.find({isDeleted:false}).populate('postedBy')
+      const limit = 3;
+      let {page} = req.query
+      console.log(page);
+      if(page == undefined) {
+        page = 1
+      }
+      let skip = (page - 1) * limit
+      let allJobs = await Job.find({isDeleted:false}).skip(skip).limit(limit).populate('postedBy')
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
@@ -256,25 +261,27 @@ module.exports = {
   applyJob: async (req,res) => {
     const userId = req.userData.userId
     try {
-      const {managerEmail,postId} = req.body
-      let findPost = await Job.findOne({id:postId})
-      if(!findPost) {
-        return res.status(Statuscode.NOT_FOUND).json({
-          status: Statuscode.NOT_FOUND,
-          message: 'Not found'
+      const user = await sails.helpers.commonFun(userId)
+      if(user.role === 'client') {
+        const {managerEmail,postId} = req.body
+        let findPost = await Job.findOne({id:postId})
+        if(!findPost) {
+          return res.status(Statuscode.NOT_FOUND).json({
+            status: Statuscode.NOT_FOUND,
+            message: 'Not found'
+          })
+        }
+        await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
+        return res.status(Statuscode.OK).json({
+          status: Statuscode.OK,
+          message: 'email send'
         })
       }
-      const user = await sails.helpers.commonFun(userId)
-      await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
-      return res.status(Statuscode.OK).json({
-        status: Statuscode.OK,
-        message: 'email send'
-      })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
         msg: "Server Error"
       })
     }
-  }
+  },
 };

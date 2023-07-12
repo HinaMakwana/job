@@ -18,9 +18,10 @@ function Success() {
 					},
 				}}
 				>
-				<Text b color="inherit">
-					ACME
-				</Text>
+					<img src="logo.jpg" alt="logo" className="h-16" />
+					<Text b color="inherit">
+						JobPortal
+					</Text>
 				</Navbar.Brand>
 				<Navbar.Content
 				// enableCursorHighlight
@@ -41,8 +42,9 @@ function Success() {
 					</div>
 				) :
 				(
-					<div>
+					<div className='flex flex-col items-center'>
 						<p className=' text-5xl text-center mt-20'>Posted job successfully</p>
+						{/* <button className='mt-10 border-2 p-2 rounded-lg'><a href='post'>Add one more job</a></button> */}
 					</div>
 				)
 			}

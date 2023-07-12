@@ -1,4 +1,4 @@
-import { Card, FormElement, Input } from "@nextui-org/react";
+import { Card, FormElement, Input, Pagination } from "@nextui-org/react";
 import { Navbar,Text } from '@nextui-org/react'
 import { getCookie } from "cookies-next";
 import React, { useEffect, useState } from 'react'
@@ -20,19 +20,22 @@ function Apply() {
   const [select,setSelect] = useState({title:''})
   const [data,setData] = useState<any[]>([])
   const [post,setPost] = useState<post>()
-	const getData = async () => {
-		const a = await fetch('http://127.0.0.1:1337/job',{
-			method: 'GET',
-			headers :{
-				// 'Content-Type' :'application/json',
-				// 'Authorization' : `Bearer ${token}`
-				},
-		})
-		const content = await a.json()
-		console.log(content.List);
-		setData(content.List)
-		console.log('data',data)
-	}
+  const [page,setPage] = useState(1)
+	// const getData = async () => {
+  //   console.log(page);
+    
+	// 	const a = await fetch(`http://127.0.0.1:1337/job?page=${page}`,{
+	// 		method: 'GET',
+	// 		headers :{
+	// 			// 'Content-Type' :'application/json',
+	// 			// 'Authorization' : `Bearer ${token}`
+	// 			},
+	// 	})
+	// 	const content = await a.json()
+	// 	console.log(content.List);
+	// 	setData(content.List)
+	// 	console.log('data',data)
+	// }
   const handleChange = (e:React.ChangeEvent<FormElement>)=> {
     const {name , value} = e.target as HTMLInputElement ;
         setSelect((preform) => ({
@@ -74,8 +77,24 @@ function Apply() {
       body: JSON.stringify({managerEmail:managerEmail,postId:postId})
     })
   }
+  const handlePageChange = async (newPage:any) => {
+    // Perform actions with the new page number
+    console.log('New Page:', newPage);
+    const a = await fetch(`http://127.0.0.1:1337/job?page=${newPage}`,{
+			method: 'GET',
+			headers :{
+				// 'Content-Type' :'application/json',
+				// 'Authorization' : `Bearer ${token}`
+				},
+		})
+		const content = await a.json()
+		console.log(content.List);
+		setData(content.List)
+  };
+
   useEffect(()=>{
-    getData()
+    handlePageChange(1)
+    // getData()
   },[])
   return (
     <div>
@@ -88,16 +107,17 @@ function Apply() {
             },
           }}
           >
-          <Text b color="inherit">
-            ACME
-          </Text>
+            <img src="logo.jpg" alt="logo" className="h-16" />
+            <Text b color="inherit">
+              JobPortal
+            </Text>
           </Navbar.Brand>
           <Navbar.Content
           // enableCursorHighlight
           css={{gap:'50px'}}
           >
           <Navbar.Link href="#" className="hover:opacity-100 opacity-50">
-            <button className='border-2 w-32 p-2 rounded-lg bg-sky-100 hover:bg-sky-700'>My post</button>
+            {/* <button className='border-2 w-32 p-2 rounded-lg bg-sky-100 hover:bg-sky-700'>My post</button> */}
           </Navbar.Link>
           </Navbar.Content>
         </Navbar>
@@ -105,7 +125,7 @@ function Apply() {
       { post ?
           (
             <div>
-              <div className="text-4xl font-semibold text-center">Title:{post.title}</div>
+              <div className="text-4xl font-semibold text-center mt-10">Title:{post.title}</div>
               <div className="mt-10 flex justify-center">
                 <Card css={{ mw: "700px" }}>
                   <Card.Body>
@@ -120,7 +140,7 @@ function Apply() {
                       <span className="text-lg">{post.postedBy.email}</span>
                     </div>
                     <div>
-                      <button className="border-2 p-2 rounded-xl bg-blue-400 mt-5">Apply Now</button>
+                      <button className="border-2 p-2 rounded-xl bg-blue-400 mt-5 hover:bg-sky-500 hover:scale-105" onClick={()=>{sendMail(post.id,post.postedBy.email)}} >Apply Now</button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -143,31 +163,36 @@ function Apply() {
                   </form>
                 </div>
               </div>
-              <div className="flex gap-3 flex-col items-center mt-5">
-              {
-                data && data.map((post,index)=> {
-                  return (
-                    <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}}>
-                      <Card.Body>
-                        <div className="flex gap-3 flex-col">
-                          <div>
-                            <h1>{post.title}</h1>
+              <div>
+                <div className="flex gap-3 flex-col items-center mt-5">
+                {
+                  data && data.map((post,index)=> {
+                    return (
+                      <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}}>
+                        <Card.Body>
+                          <div className="flex gap-3 flex-col">
+                            <div>
+                              <h1>{post.title}</h1>
+                            </div>
+                            <div className="flex flex-col">
+                              <span>Company:{post.company}</span>
+                              <span>Location:{post.jobLocation}</span>
+                            </div>
+                            <div className="flex gap-3">
+                              <button className="border-2 w-20 hover:bg-blue-600 p-2 rounded-lg" onClick={()=>{sendMail(post.id,post.postedBy.email)}}>Apply</button>
+                              <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
+                            </div>
                           </div>
-                          <div className="flex flex-col">
-                            <span>Company:{post.company}</span>
-                            <span>Location:{post.jobLocation}</span>
-                          </div>
-                          <div className="flex gap-3">
-                            <button className="border-2 w-20 hover:bg-blue-600 p-2 rounded-lg" onClick={()=>{sendMail(post.id,post.postedBy.email)}}>Apply</button>
-                            <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
-                          </div>
-                        </div>
 
-                      </Card.Body>
-                    </Card>
-                  )
-                })
-              }
+                        </Card.Body>
+                      </Card>
+                    )
+                  })
+                }
+                </div>
+                <div className="my-5 flex justify-center">
+                  <Pagination onChange={handlePageChange} className="w-96" total={20} initialPage={1} />;
+                </div>
               </div>
             </div>
           )

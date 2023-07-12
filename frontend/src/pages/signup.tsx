@@ -100,6 +100,7 @@ export default function Signup() {
                     <Button onClick={submit} type="submit" className="bg-blue-600 hover:bg-blue-200">
                         Sign In
                     </Button>
+                    <span className='text-blue-600 mt-3'><Link href='/signup'>Don't have an account?</Link></span>
                 </form>
             </div>
             <div className='basis-1/2 m-auto'>

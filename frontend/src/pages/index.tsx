@@ -6,6 +6,7 @@ import Article from '@/components/article'
 import Job from '@/components/job'
 import Post from '@/components/post'
 import CarouselComponent from '@/components/carousel'
+import Footer from '@/components/footer'
 
 export default function Home() {
 
@@ -17,17 +18,20 @@ export default function Home() {
       <div className=''>
         <Signup />
       </div>
-      <div className='mt-10 bg-gray-200'>
+      <div className='mt-10 bg-gray-200' id='ar001'>
         <Article />
       </div>
       <div className='mt-10'>
         <Job />
       </div>
-      <div className='mt-10 bg-red-50'>
+      <div className='mt-10 bg-red-50' id='ps001'>
         <Post />
       </div>
       <div className=' bg-gray-200'>
         <CarouselComponent />
+      </div>
+      <div className=''>
+        <Footer />
       </div>
     </div>
   )

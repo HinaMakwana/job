@@ -8,11 +8,7 @@ const role = sails.config.constant.role
 module.exports = {
 
   attributes: {
-    id :{
-      type: 'string',
-      unique: true,
-      required : true
-    },
+  
     firstName : {
       type : 'string',
       required : true

@@ -59,7 +59,7 @@ module.exports.datastores = {
     // adapter: 'sails-mysql',
     // url: 'mysql://root:root@localhost:3306/sys'
     adapter: 'sails-postgresql',
-    url: 'postgresql://postgres:root@localhost:5432/jobPortal',
+    url: process.env.DATABASE_URI,
   },
 
 };

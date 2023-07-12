@@ -25,8 +25,9 @@ export default function Navigation() {
             },
           }}
         >
+          <img src="logo.jpg" alt="logo" className="h-16" />
           <Text b color="inherit">
-            ACME
+            JobPortal
           </Text>
         </Navbar.Brand>
         <Navbar.Content
@@ -34,7 +35,7 @@ export default function Navigation() {
         hideIn="sm"
         css={{gap:'50px'}}
         >
-          <Navbar.Link href="#" className="hover:opacity-100 opacity-50">
+          <Navbar.Link href="#ar001" className="hover:opacity-100 opacity-50">
             <div className="flex flex-col">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 17" className="stroke-1 h-5">
                 <path d="m11 9.5h5v1h-5v-1zm5-5h-12v3h12v-3zm-5 8h5v-1h-5v1zm9-12v13c0 1.657-1.343 3-3 3h-14c-1.657 0-3-1.343-3-3v-13h20zm-2 2h-16v11c0 0.552 0.449 1 1 1h14c0.551 0 1-0.448 1-1v-11zm-9 7h-5v3h5v-3z" fill="currentColor"></path>
@@ -50,7 +51,7 @@ export default function Navigation() {
               <span className="text-base text-slate-950">People</span>
             </div>
           </Navbar.Link>
-          <Navbar.Link href="#" className="hover:opacity-100 opacity-50">
+          <Navbar.Link href="#ps001" className="hover:opacity-100 opacity-50">
             <div className="flex flex-col">
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 100.54" className="h-5" >
                 <g>

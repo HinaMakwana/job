@@ -39,7 +39,7 @@ module.exports = {
     let transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
-      auth: { user: "f92a35a294cae1", pass: "11e4263e3c726e" }
+      auth: { user: process.env.USER, pass: process.env.PASSWORD }
     });
     let message  = {
       from : mail,
@@ -48,6 +48,14 @@ module.exports = {
       // text : "Hello",
       html : `${inputs.firstName} candidate is apply for ${inputs.title}`
   }
-    transport.sendMail(message)
+    transport.sendMail(message,(err,data)=>{
+      if(err) {
+        console.log(err);
+      }
+
+      if(data) {
+        console.log(data);
+      }
+    })
   }
 }

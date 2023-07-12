@@ -10,10 +10,6 @@ module.exports = {
 
   attributes: {
 
-    id: {
-      type: 'string',
-      required: true
-    },
     title: {
       type: 'string',
       required: true,
