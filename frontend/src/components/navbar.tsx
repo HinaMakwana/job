@@ -69,7 +69,7 @@ export default function Navigation() {
         }}
         >
             <a href="/auth"><button className="hover:bg-slate-400 w-32 h-12 rounded-3xl">Join now</button></a>
-            <button className="border-2 w-32 h-12 rounded-3xl border-blue-700 text-blue-800 hover:bg-blue-100">Sign in</button>
+            <a href="/signup"><button className="border-2 w-32 h-12 rounded-3xl border-blue-700 text-blue-800 hover:bg-blue-100">Sign in</button></a>
         </Navbar.Content>
         <Navbar.Collapse>
           {collapseItems.map((item, index) => (

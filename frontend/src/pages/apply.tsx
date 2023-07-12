@@ -20,22 +20,7 @@ function Apply() {
   const [select,setSelect] = useState({title:''})
   const [data,setData] = useState<any[]>([])
   const [post,setPost] = useState<post>()
-  const [page,setPage] = useState(1)
-	// const getData = async () => {
-  //   console.log(page);
-    
-	// 	const a = await fetch(`http://127.0.0.1:1337/job?page=${page}`,{
-	// 		method: 'GET',
-	// 		headers :{
-	// 			// 'Content-Type' :'application/json',
-	// 			// 'Authorization' : `Bearer ${token}`
-	// 			},
-	// 	})
-	// 	const content = await a.json()
-	// 	console.log(content.List);
-	// 	setData(content.List)
-	// 	console.log('data',data)
-	// }
+  const [totalPage,setTotalPage] = useState(10)
   const handleChange = (e:React.ChangeEvent<FormElement>)=> {
     const {name , value} = e.target as HTMLInputElement ;
         setSelect((preform) => ({
@@ -78,23 +63,16 @@ function Apply() {
     })
   }
   const handlePageChange = async (newPage:any) => {
-    // Perform actions with the new page number
-    console.log('New Page:', newPage);
     const a = await fetch(`http://127.0.0.1:1337/job?page=${newPage}`,{
-			method: 'GET',
-			headers :{
-				// 'Content-Type' :'application/json',
-				// 'Authorization' : `Bearer ${token}`
-				},
+			method: 'GET'
 		})
 		const content = await a.json()
-		console.log(content.List);
+    const total = Math.ceil((content.count) / 3)
+    setTotalPage(total)
 		setData(content.List)
   };
-
   useEffect(()=>{
     handlePageChange(1)
-    // getData()
   },[])
   return (
     <div>
@@ -122,7 +100,7 @@ function Apply() {
           </Navbar.Content>
         </Navbar>
       </div>
-      { post ?
+        { post ?
           (
             <div>
               <div className="text-4xl font-semibold text-center mt-10">Title:{post.title}</div>
@@ -168,7 +146,7 @@ function Apply() {
                 {
                   data && data.map((post,index)=> {
                     return (
-                      <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}}>
+                      <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}} key={index}>
                         <Card.Body>
                           <div className="flex gap-3 flex-col">
                             <div>
@@ -191,13 +169,13 @@ function Apply() {
                 }
                 </div>
                 <div className="my-5 flex justify-center">
-                  <Pagination onChange={handlePageChange} className="w-96" total={20} initialPage={1} />;
+                  <Pagination onChange={handlePageChange} className="w-96" total={totalPage} initialPage={1} />;
                 </div>
               </div>
             </div>
           )
         }
-	</div>
+	  </div>
   )
 }
 

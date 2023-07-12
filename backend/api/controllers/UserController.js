@@ -5,12 +5,11 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const uploadImage = require("../helpers/upload-image")
 
-const id = sails.config.custom.uuid()
-const bcrypt = sails.config.custom.bcrypt
-const jwt = sails.config.custom.jwt
-const Statuscode = sails.config.constant.HttpStatusCode
+const id = sails.config.custom;
+const bcrypt = sails.config.custom.bcrypt;
+const jwt = sails.config.custom.jwt;
+const Statuscode = sails.config.constant.HttpStatusCode;
 module.exports = {
     /**
      * @description register user in database
@@ -24,30 +23,25 @@ module.exports = {
             if(findUser){
                 return res.status(Statuscode.CONFLICT).json({
                     status: Statuscode.CONFLICT,
-                    msg: "user already exist"
+                    message: "user already exist"
                 })
             }
-            // if(!_isIn(role)) {
-            //     return res.status.Statuscode(BAD_REQUEST).json({
-            //         status: Statuscode.BAD_REQUEST,
-            //         message: 'you can select role either manager or client'
-            //     })
-            // }
+
             if(password !== confirmPassword) {
                 return res.status(Statuscode.BAD_REQUEST).json({
                     status : Statuscode.BAD_REQUEST,
-                    mgs: "confirmPassword must match with password"
+                    message: "confirmPassword must match with password"
                 })
             } else {
                 const pass = await bcrypt.hash(password, 10)
                 if(!pass) {
                     return res.status(Statuscode.SERVER_ERROR).json({
                         status: Statuscode.SERVER_ERROR,
-                        msg: "Server Error"
+                        message: "Server Error"
                     })
                 }
                 const data = {
-                    id : id,
+                    id : id.uuid(),
                     firstName : firstName,
                     lastName: lastName,
                     email : email,
@@ -57,14 +51,14 @@ module.exports = {
                 const createUser = await User.create(data).fetch()
                 // await sails.helpers.sendMail(email,firstName)
                 return res.status(Statuscode.CREATED).json({
-                    msg : 'user created',
+                    message : 'user created',
                     User : createUser
                 })
             }
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
                 status: Statuscode.SERVER_ERROR,
-                msg: "Server Error"
+                message: "Server Error"
             })
         }
     },
@@ -73,13 +67,12 @@ module.exports = {
      * @route (POST /user/login)
      */
     login: async (req,res) => {
-        let {email, password} = req.body
+        let {email, password} = req.body;
         try {
             let findUser = await User.findOne({
                 email: email,
                 isDeleted: false
             })
-            console.log(findUser);
             if(!findUser) {
                 return res.status(Statuscode.NOT_FOUND).json({
                     status:Statuscode.NOT_FOUND,
@@ -126,7 +119,7 @@ module.exports = {
      */
     logout: async (req,res) => {
         try {
-            const userId =  req.userData.userId
+            const userId =  req.userData.userId;
             const findUser = await User.findOne({id: userId,isDeleted: false})
             if(!findUser) {
                 return res.status(Statuscode.NOT_FOUND).json({
@@ -158,7 +151,7 @@ module.exports = {
      * @route (GET /user/profile)
      */
     profile: async (req,res) => {
-        const userId = req.userData.userId
+        const userId = req.userData.userId;
         try {
             const user = await sails.helpers.commonFun(userId);
             res.status(Statuscode.OK).json({
@@ -177,7 +170,7 @@ module.exports = {
      * @route (POST /user/uploadImage)
      */
     uploadImage: async (req,res) => {
-        const userId = req.userData.userId
+        const userId = req.userData.userId;
         try {
             const findUser = await User.findOne({id: userId})
             if(!findUser) {
@@ -188,7 +181,7 @@ module.exports = {
             }
             let fileUpload = await sails.helpers.uploadImage(req,'image',`profile/${findUser.firstName}`)
             if (fileUpload.type.includes('image/')) {
-                fileUpload = fileUpload.fd
+                fileUpload = fileUpload.fd;
             } else {
                 return res.status(Statuscode.UNAUTHORIZED).json({
                     status: Statuscode.UNAUTHORIZED,

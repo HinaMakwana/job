@@ -49,7 +49,7 @@ export default function Signup() {
             alert('Server error')
         }
 	}
-        return (
+    return (
         <section className='flex' id='section1'>
             <div className='basis-1/2 xl:pl-44 md:pl-20 mt-20 sm:pl-0' id='form'>
                 <form className="flex max-w-md flex-col gap-4">

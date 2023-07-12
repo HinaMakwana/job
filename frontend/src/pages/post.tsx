@@ -23,6 +23,7 @@ function Post() {
 	const [selectedOption, setSelectedOption] = useState<role>();
 	const [selectOption, setSelectOption] = useState<role>()
 	const [form, setForm] = useState({description:''})
+	const token = getCookie('authToken')
 
 	const handleChange = (e:React.ChangeEvent<FormElement>)=> {
 		const {name , value} = e.target as HTMLTextAreaElement ;
@@ -52,7 +53,6 @@ function Post() {
 	setSelect(option);
 	setShow(false)
 	}
-
 	const handleSearchInputChange = (event:any) => {
 	setSearchQuery(event.target.value);
 	};
@@ -62,15 +62,14 @@ function Post() {
 	const searchInputChange = (event:any) => {
 	setSearch(event.target.value)
 	}
-
 	const filteredOptions = options.filter((option) =>
 	option.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 	const filtered = options1.filter((option) =>
-	option.toLowerCase().includes(query.toLowerCase())
+		option.toLowerCase().includes(query.toLowerCase())
 	);
 	const filterOption = jobLocation.filter((option) =>
-	option.toLowerCase().includes(search.toLowerCase())
+		option.toLowerCase().includes(search.toLowerCase())
 	)
 	const handleSelectChange = (selectedOption:any) => {
 		setSelectedOption(selectedOption);
@@ -78,7 +77,6 @@ function Post() {
 	const handleSelect = (option:any) => {
 		setSelectOption(option)
 	}
-	const token = getCookie('authToken')
 	const submit = async (e:React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 		if(selectOption && selectedOption) {
@@ -108,7 +106,6 @@ function Post() {
 			}
 		}
 	}
-
   return (
 	<div>
 		<div>
@@ -129,10 +126,10 @@ function Post() {
 				// enableCursorHighlight
 				css={{gap:'50px'}}
 				>
-					
+
 				</Navbar.Content>
 			</Navbar>
-		</div>	
+		</div>
 		<div className='mt-10'>
 			<div>
 				<p className='text-center text-4xl'>Tell us who you're hiring</p>

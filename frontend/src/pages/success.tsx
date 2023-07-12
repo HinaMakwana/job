@@ -44,7 +44,7 @@ function Success() {
 				(
 					<div className='flex flex-col items-center'>
 						<p className=' text-5xl text-center mt-20'>Posted job successfully</p>
-						{/* <button className='mt-10 border-2 p-2 rounded-lg'><a href='post'>Add one more job</a></button> */}
+						<button className='mt-10 border-2 p-2 rounded-lg'><a href='post'>Add one more job</a></button>
 					</div>
 				)
 			}

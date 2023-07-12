@@ -5,8 +5,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const id = sails.config.custom.uuid()
-const Statuscode = sails.config.constant.HttpStatusCode
+const id = sails.config.custom;
+const Statuscode = sails.config.constant.HttpStatusCode;
 
 module.exports = {
   /**
@@ -14,7 +14,7 @@ module.exports = {
    * @route (POST job/post)
    */
   post: async (req,res) => {
-    const userId = req.userData.userId
+    const userId = req.userData.userId;
     try {
       const user = await sails.helpers.commonFun(userId);
       let {title, company,workplaceType,jobLocation,jobType,description} = req.body
@@ -27,7 +27,7 @@ module.exports = {
           })
         }
         const data = {
-          id : id,
+          id : id.uuid(),
           title : title,
           company : company,
           workplaceType : workplaceType,
@@ -36,7 +36,6 @@ module.exports = {
           postedBy : user.id,
           description : description
         }
-        console.log(data);
         let postJob = await Job.create(data).fetch()
         return res.status(Statuscode.CREATED).json({
           status: Statuscode.CREATED,
@@ -50,10 +49,9 @@ module.exports = {
           })
         }
     } catch (error) {
-      console.log(error);
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error!" + error
+        message: "Server Error!" + error
       })
     }
   },
@@ -62,7 +60,7 @@ module.exports = {
    * @route (PATCH job/update)
    */
   updateJob: async (req,res) => {
-    const userId = req.userData.userId
+    const userId = req.userData.userId;
     try {
       const user = await sails.helpers.commonFun(userId)
       let {title,description,jobId} = req.body
@@ -86,7 +84,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
 
@@ -96,9 +94,9 @@ module.exports = {
    * @route (DELETE job/delete)
    */
   deleteJob: async (req,res) => {
-    const userId = req.userData.userId
+    const userId = req.userData.userId;
     try {
-      const user = await sails.helpers.commonFun(userId)
+      await sails.helpers.commonFun(userId);
       let { jobId } = req.body
       let findId = await Job.findOne({id: jobId,isDeleted:false})
       if(!findId) {
@@ -117,7 +115,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
   },
@@ -128,13 +126,13 @@ module.exports = {
   listAllJob: async (req,res) => {
     try {
       const limit = 3;
-      let {page} = req.query
-      console.log(page);
+      let {page} = req.query;
       if(page == undefined) {
-        page = 1
+        page = 1;
       }
       let skip = (page - 1) * limit
       let allJobs = await Job.find({isDeleted:false}).skip(skip).limit(limit).populate('postedBy')
+      let countAllJob = await Job.count({isDeleted:false})
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
@@ -143,12 +141,13 @@ module.exports = {
       }
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
-        List: allJobs
+        List: allJobs,
+        count:countAllJob
       })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
   },
@@ -174,7 +173,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
   },
@@ -189,7 +188,6 @@ module.exports = {
       const user = await sails.helpers.commonFun(userId)
       if(user.role === 'client'){
         let getOneJob = await Job.findOne({id:id}).populate('postedBy')
-        console.log(1);
         if(!getOneJob) {
           return res.status(Statuscode.NOT_FOUND).json({
             status: Statuscode.NOT_FOUND,
@@ -221,14 +219,22 @@ module.exports = {
     const userId = req.userData.userId
     try {
       let {title} = req.body
+      const limit = 3;
+      let {page} = req.query;
+      if(page == undefined) {
+        page = 1;
+      }
+      let skip = (page - 1) * limit
       let user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
-        query = `SELECT * FROM "job"
-                  WHERE lower(title) LIKE '%' || lower($1) || '%'
-                  AND "isDeleted" = false`
+        query = `SELECT *
+                 FROM "job"
+                 WHERE lower(title) LIKE '%' || lower($1) || '%'
+                 AND "isDeleted" = false
+                 ORDER BY title LIMIT ${limit} OFFSET ${skip}`
         const search = await sails.sendNativeQuery(query, [title])
         // const search = await Job.find({where: {
-        //   title: {'ilike' : '%' + title + '%'},
+        //   title: {'like' : '%' + title + '%'},
         //   isDeleted : false
         // }})
         // const search = await Job.find({
@@ -244,13 +250,13 @@ module.exports = {
       } else {
         return res.status(Statuscode.SERVER_ERROR).json({
           status: Statuscode.SERVER_ERROR,
-          msg: "Server Error"
+          message: "Server Error"
         })
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
   },
@@ -280,7 +286,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        msg: "Server Error"
+        message: "Server Error"
       })
     }
   },
