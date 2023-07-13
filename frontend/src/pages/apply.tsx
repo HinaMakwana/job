@@ -1,7 +1,7 @@
 import { Card, FormElement, Input, Pagination } from "@nextui-org/react";
 import { Navbar,Text } from '@nextui-org/react'
 import { getCookie } from "cookies-next";
-import React, { useEffect, useState } from 'react'
+import React, { MouseEventHandler, useEffect, useState } from 'react'
 interface post {
   id: string,
   title: string,
@@ -17,6 +17,7 @@ interface post {
 }
 function Apply() {
   const token = getCookie('authToken')
+  const [currentPage,setCurrentPage] = useState(1)
   const [select,setSelect] = useState({title:''})
   const [data,setData] = useState<any[]>([])
   const [post,setPost] = useState<post>()
@@ -29,8 +30,9 @@ function Apply() {
     }));
     }
   const searchData = async (e:React.MouseEvent<HTMLButtonElement>) => {
+    console.log(currentPage,'current');
     e.preventDefault()
-    const search = await fetch('http://127.0.0.1:1337/job/search',{
+    const search = await fetch(`http://127.0.0.1:1337/job/search?page=${currentPage}`,{
       method: 'POST',
       headers: {
         'Authorization' : `Bearer ${token}`
@@ -39,7 +41,9 @@ function Apply() {
     })
     const output = await search.json()
     console.log(output.data.rows);
+    const final = Math.ceil((output.count) / 3)
     setData(output.data.rows)
+    setTotalPage(final)
   }
   const getPost = async (job:string) => {
     const search = await fetch('http://127.0.0.1:1337/job/listone',{
@@ -63,6 +67,8 @@ function Apply() {
     })
   }
   const handlePageChange = async (newPage:any) => {
+    console.log(newPage,'new');
+    setCurrentPage(newPage)
     const a = await fetch(`http://127.0.0.1:1337/job?page=${newPage}`,{
 			method: 'GET'
 		})
@@ -161,7 +167,6 @@ function Apply() {
                               <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
                             </div>
                           </div>
-
                         </Card.Body>
                       </Card>
                     )
@@ -169,7 +174,7 @@ function Apply() {
                 }
                 </div>
                 <div className="my-5 flex justify-center">
-                  <Pagination onChange={handlePageChange} className="w-96" total={totalPage} initialPage={1} />;
+                  <Pagination onChange={handlePageChange} className="w-96" total={totalPage} initialPage={1} />
                 </div>
               </div>
             </div>

@@ -147,7 +147,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: "Server Error" + error
       })
     }
   },
@@ -227,12 +227,13 @@ module.exports = {
       let skip = (page - 1) * limit
       let user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
-        query = `SELECT *
-                 FROM "job"
+      let query1 = `SELECT * FROM "job"
                  WHERE lower(title) LIKE '%' || lower($1) || '%'
-                 AND "isDeleted" = false
-                 ORDER BY title LIMIT ${limit} OFFSET ${skip}`
-        const search = await sails.sendNativeQuery(query, [title])
+                 AND "isDeleted" = false`
+      let query2 = ` ORDER BY title LIMIT ${limit} OFFSET ${skip}`
+      let query = query1.concat(query2)
+        const search = await sails.sendNativeQuery(query1, [title])
+        const data = await sails.sendNativeQuery(query,[title])
         // const search = await Job.find({where: {
         //   title: {'like' : '%' + title + '%'},
         //   isDeleted : false
@@ -245,7 +246,8 @@ module.exports = {
         // });
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
-          data: search
+          data: data,
+          count: search.rows.length
         })
       } else {
         return res.status(Statuscode.SERVER_ERROR).json({

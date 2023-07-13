@@ -74,7 +74,7 @@ function Auth() {
                 </Navbar>
             </div>
             <div>
-                <div className='flex justify-center mt-10 border-2 max-w-xl'>
+                <div className='flex justify-center mt-10'>
                     <form className="flex flex-col gap-7">
                         <div>
                             <span className='text-5xl'>Join your Community</span>

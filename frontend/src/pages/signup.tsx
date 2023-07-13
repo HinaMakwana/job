@@ -1,5 +1,7 @@
 import { setCookie } from 'cookies-next';
 import { Button, Label, TextInput } from 'flowbite-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -31,7 +33,10 @@ export default function Signup() {
             secure: true
           })
         if(a.status === 200) {
-            alert('Login successfully')
+            // alert('Login successfully')
+            toast.success('Login successfully', {
+                position: toast.POSITION.TOP_RIGHT
+            });
             if(content.role == 'manager') {
                 setCookie("authToken",content.token,{
                     path: '/',
@@ -39,9 +44,9 @@ export default function Signup() {
                     sameSite: true,
                     secure: true
                   })
-                router.push('post')
+                // router.push('post')
             } else {
-                router.push('apply')
+                // router.push('apply')
             }
         } else if(a.status == 409) {
             alert('User already exist..')
