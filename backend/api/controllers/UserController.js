@@ -79,32 +79,29 @@ module.exports = {
                     message: 'Email is Invalid'
                 })
             }
-            bcrypt.compare(password,findUser.password,async(err,success)=>{
-                if(err) {
-                    return res.status(Statuscode.SERVER_ERROR).json({
-                        status: Statuscode.SERVER_ERROR,
-                        message: 'Email or password invalid'
-                    })
+            const isCompare = await bcrypt.compare(password,findUser.password)
+            if(isCompare === false) {
+                return res.status(Statuscode.FORBIDDEN).json({
+                    status: Statuscode.FORBIDDEN,
+                    message: 'Email or password invalid'
+                })
+            }
+            const token = jwt.sign(
+                {
+                    email: findUser.email,
+                    userId: findUser.id
+                },
+                process.env.JWT_KEY,
+                {
+                    expiresIn: "8h"
                 }
-                if(success) {
-                    const token = jwt.sign(
-                        {
-                            email: findUser.email,
-                            userId: findUser.id
-                        },
-                        process.env.JWT_KEY,
-                        {
-                            expiresIn: "8h"
-                        }
-                    )
-                    await User.update({email:findUser.email},{token: token})
-                    return res.status(Statuscode.OK).json({
-                        status: Statuscode.OK,
-                        message: 'Login Successfully',
-                        token: token,
-                        role: findUser.role
-                    })
-                }
+            )
+            await User.update({email:findUser.email},{token: token})
+            return res.status(Statuscode.OK).json({
+                status: Statuscode.OK,
+                message: 'Login Successfully',
+                token: token,
+                role: findUser.role
             })
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({

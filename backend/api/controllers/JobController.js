@@ -125,7 +125,7 @@ module.exports = {
    */
   listAllJob: async (req,res) => {
     try {
-      const limit = 3;
+      const limit = 4;
       let {page} = req.query;
       if(page == undefined) {
         page = 1;
@@ -184,26 +184,19 @@ module.exports = {
   listOne: async (req,res) => {
     const userId = req.userData.userId
     try {
-      let {id} = req.body
-      const user = await sails.helpers.commonFun(userId)
-      if(user.role === 'client'){
-        let getOneJob = await Job.findOne({id:id}).populate('postedBy')
-        if(!getOneJob) {
-          return res.status(Statuscode.NOT_FOUND).json({
-            status: Statuscode.NOT_FOUND,
-            message: 'post not found'
-          })
-        }
-        return res.status(Statuscode.OK).json({
-          status: Statuscode.OK,
-          data: getOneJob
-        })
-      } else {
-        return res.status(Statuscode.SERVER_ERROR).json({
-          status: Statuscode.SERVER_ERROR,
-          message: "Server Error"
+      let {id} = req.params
+      await sails.helpers.commonFun(userId)
+      let getOneJob = await Job.findOne({id:id}).populate('postedBy')
+      if(!getOneJob) {
+        return res.status(Statuscode.NOT_FOUND).json({
+          status: Statuscode.NOT_FOUND,
+          message: 'post not found'
         })
       }
+      return res.status(Statuscode.OK).json({
+        status: Statuscode.OK,
+        data: getOneJob
+      })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,

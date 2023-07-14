@@ -1,22 +1,30 @@
 import { Card } from "@nextui-org/react";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function ListJob() {
 	const [data,setData] = useState<any[]>([])
+	const router = useRouter()
 	const getData = async () => {
 		const token = getCookie('authToken')
 		const a = await fetch('http://127.0.0.1:1337/job/list',{
 			method: 'GET',
 			headers :{
-				// 'Content-Type' :'application/json',
 				'Authorization' : `Bearer ${token}`
-				},
+			},
 		})
 		const content = await a.json()
-		console.log(content.List);
 		setData(content.List)
 		console.log('data',data)
+	}
+	const sendId = async (id:any) => {
+		router.push({
+			pathname: '/listoneJob',
+			query : {
+				id
+			}
+		})
 	}
 	useEffect(()=>{
 		getData()
@@ -25,11 +33,12 @@ export default function ListJob() {
 		<div className="flex gap-3 flex-col items-center mt-5">
 			{
 				data && data.map((post,index)=> {
+
 					return (
 						<Card css={{ mw: "900px" }} isHoverable isPressable>
 							<Card.Body>
 
-								<div className="flex gap-3 flex-col">
+								<div key={index} className="flex gap-3 flex-col">
 									<div>
 										<h1>{post.title}</h1>
 									</div>
@@ -38,7 +47,7 @@ export default function ListJob() {
 										<span>Location:{post.jobLocation}</span>
 									</div>
 									<div>
-										<button className="border-2 p-2 rounded-lg">View More details</button>
+										<button onClick={()=> {sendId(post.id)}} className="border-2 p-2 rounded-lg hover:bg-cyan-700 hover:scale-110">View More details</button>
 									</div>
 								</div>
 

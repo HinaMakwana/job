@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Navbar, Text } from "@nextui-org/react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 interface role {
     value: string,
     label:string
@@ -30,7 +33,7 @@ function Auth() {
 	const submit = async (e:React.MouseEvent<HTMLButtonElement>) => {
         if(selectedOption) {
             e.preventDefault()
-            const a = await fetch('http://localhost:1337/user/signup',{
+            const a = await fetch('http://127.0.0.1:1337/user/signup',{
                 method: 'POST',
                 body: JSON.stringify({...form,role:selectedOption.value})
             })
@@ -38,18 +41,28 @@ function Auth() {
             console.log('content',content);
 
             if(a.status === 201) {
-                alert('Successfully register')
+                toast.success('signUp successfully', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
                 router.push('signup')
             } else if(a.status == 409) {
-                alert('User already exist..')
+                toast.warning('User is already exist',{
+                    position: toast.POSITION.TOP_RIGHT
+                })
             } else if(a.status === 500) {
-                alert('Server error')
+                toast.error('Server Error',{
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            } else if(a.status === 400) {
+                toast.warning('Password and Confirm passwrd must match',{
+                    position: toast.POSITION.TOP_RIGHT
+                })
             }
         }
 	}
     return (
         <div>
-            <div>
+            <div className="">
                 <Navbar variant="sticky" className="lg:px-32 md:px-24 sm:px-16">
                 <Navbar.Brand
                 css={{
@@ -73,9 +86,9 @@ function Auth() {
                 </Navbar.Content>
                 </Navbar>
             </div>
-            <div>
-                <div className='flex justify-center mt-10'>
-                    <form className="flex flex-col gap-7">
+            <div className=" bg-gradient-to-r from-gray-500 to-gray-500 -mt-5 h-[92.4vh]">
+                <div className='flex justify-center mt-5'>
+                    <form className="bg-white flex flex-col gap-1 border-2 p-10 rounded-lg mt-36 shadow-md shadow-amber-50">
                         <div>
                             <span className='text-5xl'>Join your Community</span>
                         </div>
@@ -188,10 +201,10 @@ function Auth() {
                                 />
                             </div>
                         </div>
-                        <button onClick={submit} type="submit" className="bg-blue-600 h-10 rounded-md hover:bg-blue-700 hover:text-white">
+                        <button onClick={submit} type="submit" className="bg-blue-600 h-10 rounded-md mt-2 hover:bg-blue-700 hover:text-white">
                             Sign In
                         </button>
-                        <span className='text-blue-600 -mt-5'><Link href='/signup'>Already have an account?</Link></span>
+                        <span className='text-blue-600 mt-3'><Link href='/signup'>Already have an account?</Link></span>
                     </form>
                 </div>
             </div>

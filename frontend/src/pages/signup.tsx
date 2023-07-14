@@ -1,6 +1,6 @@
 import { setCookie } from 'cookies-next';
 import { Button, Label, TextInput } from 'flowbite-react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -17,15 +17,16 @@ export default function Signup() {
 		}));
     }
 	const submit = async (e:React.MouseEvent<HTMLButtonElement>) => {
+        console.log(form);
+
         e.preventDefault();
-        const a = await fetch('http://localhost:1337/user/login',{
+        const a = await fetch('http://127.0.0.1:1337/user/login',{
             method: 'POST',
-            headers :{
-                // 'Content-Type' :'application/json'
-                },
-            body: JSON.stringify(form)
+            body: JSON.stringify({...form})
         })
         const content = await a.json()
+        console.log(content,'ytytyt');
+
         setCookie("authToken",content.token,{
             path: '/',
             maxAge: 3600,
@@ -33,7 +34,6 @@ export default function Signup() {
             secure: true
           })
         if(a.status === 200) {
-            // alert('Login successfully')
             toast.success('Login successfully', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -44,26 +44,35 @@ export default function Signup() {
                     sameSite: true,
                     secure: true
                   })
-                // router.push('post')
+                router.push('post')
             } else {
-                // router.push('apply')
+                router.push('apply')
             }
-        } else if(a.status == 409) {
-            alert('User already exist..')
+        } else if(a.status == 404) {
+            toast.error('Email is Invalid', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         } else if(a.status === 500) {
-            alert('Server error')
+            toast.error('Server error', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        } else if(a.status === 403) {
+            toast.warning('Email or Password invalid', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
 	}
     return (
         <section className='flex' id='section1'>
-            <div className='basis-1/2 xl:pl-44 md:pl-20 mt-20 sm:pl-0' id='form'>
-                <form className="flex max-w-md flex-col gap-4">
+            <div className='basis-1/2 xl:pl-80 md:pl-20 mt-20 sm:pl-0' id='form'>
+                <form className="flex max-w-md flex-col gap-4 rounded-xl border-2 p-10 bg-gradient-to-t to-gray-400 via-gray-300 from-gray-200">
                     <div>
-                        <span className='text-5xl'>Welcome to your professional community</span>
+                        <span className='text-5xl text-stone-50'>Welcome to your professional community</span>
                     </div>
                     <div>
                         <div className="mb-2 block">
                         <Label
+                            className='text-white'
                             htmlFor="email"
                             value="Your email"
                         />
@@ -81,6 +90,7 @@ export default function Signup() {
                     <div>
                         <div className="mb-2 block">
                         <Label
+                            className='text-white'
                             htmlFor="password"
                             value="Your password"
                         />

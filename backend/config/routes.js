@@ -23,6 +23,6 @@ module.exports.routes = {
     'GET /job' : 'JobController.listAllJob',
     'GET /job/list' : 'JobController.listJob',
     'POST /job/search' : 'JobController.searchJob',
-    'POST /job/listone' : 'JobController.listOne',
+    'GET /job/listone/:id' : 'JobController.listOne',
     'POST /apply' : 'JobController.applyJob'
 };
