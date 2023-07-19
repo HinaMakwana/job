@@ -4,8 +4,10 @@
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-const workType = sails.config.constant.WorkType
-const jobType = sails.config.constant.jobType
+let workType = sails.config.constant.WorkType
+let jobType = sails.config.constant.jobType
+let validateRule = sails.config.constant.validationRule.Job
+let Validator = sails.config.custom.Validator
 module.exports = {
 
   attributes: {
@@ -44,5 +46,25 @@ module.exports = {
     }
 
   },
-
+  validateBeforeCreateOrUpdate : (data) => {
+    let requiredRules = Object.keys(validateRule).filter((key)=> {
+      if(Object.keys(data).indexOf(key) >= 0) {
+        return key
+      }
+    })
+    let rule = {};
+    requiredRules.forEach((val)=>{
+      rule[val] = validateRule[val]
+    })
+    let validation = new Validator(data,rule)
+    let result = {}
+    if(validation.passes()) {
+      result['hasError'] = false
+    }
+    if(validation.fails()) {
+      result['hasError'] = true
+      result['error'] = validation.errors.all()
+    }
+    return result
+  }
 };

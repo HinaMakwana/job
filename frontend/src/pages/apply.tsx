@@ -1,7 +1,7 @@
 import { Card, FormElement, Input, Pagination } from "@nextui-org/react";
 import { Navbar,Text } from '@nextui-org/react'
 import { getCookie } from "cookies-next";
-import React, { MouseEventHandler, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 interface post {
   id: string,
   title: string,
@@ -40,7 +40,7 @@ function Apply() {
       body: JSON.stringify(select)
     })
     const output = await search.json()
-    console.log(output.data.rows);
+    console.log(output);
     const final = Math.ceil((output.count) / 3)
     setData(output.data.rows)
     setTotalPage(final)
@@ -73,7 +73,8 @@ function Apply() {
 			method: 'GET'
 		})
 		const content = await a.json()
-    const total = Math.ceil((content.count) / 3)
+    const total = Math.floor((content.count) / 3)
+    console.log(total);
     setTotalPage(total)
 		setData(content.List)
   };

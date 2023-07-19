@@ -1,6 +1,5 @@
 import Navigation from '@/components/navbar'
 import React from 'react'
-import Link from 'next/link'
 import Signup from '@/pages/signup'
 import Article from '@/components/article'
 import Job from '@/components/job'

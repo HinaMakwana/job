@@ -5,10 +5,12 @@
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 const role = sails.config.constant.role
+const Validator = sails.config.custom.Validator
+const validateRule = sails.config.constant.validationRule.User
 module.exports = {
 
   attributes: {
-  
+
     firstName : {
       type : 'string',
       required : true
@@ -44,4 +46,29 @@ module.exports = {
       isIn : [role.manager,role.client]
     }
   },
+
+  ValidationBeforeCreate : (data) => {
+    let requiredRules = Object.keys(validateRule).filter((key)=> {
+      if(Object.keys(data).indexOf(key)>= 0) {
+        return key
+      }
+    })
+    let rules = {};
+    requiredRules.forEach((val)=> {
+      rules[val] = validateRule[val]
+    })
+    let validate = new Validator(data,rules)
+    let result = {}
+    if(validate.passes()){
+      console.log('validate success');
+      result['hasError'] = false
+      return data
+    }
+    if(validate.fails()) {
+      console.log(1);
+      result['hasError'] = true
+      result['error'] = validate.errors.all()
+    }
+    return result
+  }
 };

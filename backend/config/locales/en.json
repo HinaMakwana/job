@@ -1,5 +1,26 @@
 {
   "Welcome": "Welcome",
   "A brand new app.": "A brand new app.",
-  "User.UserNotFoud" :"Users not found"
+
+  "ServerError" : "Server Error",
+  "Validation" : "Validation error",
+  "Unauthorized" : "User Unauthorized",
+  "BadRequest" : "BadRequest",
+
+  "User.UserNotFoud" :"User not found",
+  "User.Exist" : "User already Exist",
+  "User.Created" : "User registered successfully",
+  "User.InvalidEmail" : "Entered Email is invalid",
+  "User.Invalid" : "Email or Password invalid",
+  "User.Login" : "Login successfully",
+  "User.Logout" : "Logout successfully",
+  "User.Upload" : "You can upload images only",
+  "User.Uploaded" : "Uploaded Successfully",
+
+  "Job.AlreadyPosted" : "You have alrerady posted this title of Job",
+  "Job.Posted" : "Job Posted Successfully",
+  "Job.NotFound" : "Job Post Not Found",
+  "Job.Updated" : "Job updated Successfully",
+  "Job.Deleted" : "Job deleted Successfully",
+  "Job.SendMail" : "Send Mail Successfully"
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Navbar, Text, Link } from "@nextui-org/react";
+import { Navbar, Text } from "@nextui-org/react";
 import ListJob from '@/components/listJob';
 
 function Success() {

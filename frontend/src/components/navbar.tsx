@@ -1,5 +1,4 @@
 import { Navbar, Text, Link } from "@nextui-org/react";
-import Auth from "../pages/auth";
 export default function Navigation() {
   const collapseItems = [
     "Profile",

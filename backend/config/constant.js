@@ -1,4 +1,4 @@
-const HttpStatusCode = {
+  const HttpStatusCode = {
     OK: 200,
     CREATED: 201,
     BAD_REQUEST: 400,
@@ -24,12 +24,40 @@ const HttpStatusCode = {
     ft : 'full-time',
     pt : 'part-time',
     contract : 'contract'
-   }
+  }
 
+  const validationRule = {
+    User : {
+      firstName : "required|min:3",
+      lastName : "required|min:3",
+      email : "required|email",
+      password: [
+        "required",
+        "regex:/^[a-zA-Z0-9!@#$%^&*]{8,16}$/"
+      ],
+      confirmPassword: "same:password",
+      role : [ "required", { "in" : [role.client, role.manager]}]
+    },
+    Job : {
+      title: "required|min:2",
+      company: "required|min:2",
+      workplaceType: [
+        "required",
+        { "in" : [WorkType.home, WorkType.office]}
+      ],
+      jobLocation: "required|min:3",
+      jobType: [
+        "required",
+        { "in" : [jobType.contract, jobType.ft, jobType.pt]}
+      ],
+      description: "required"
+    }
+  }
 
   module.exports.constant = {
     HttpStatusCode,
     WorkType,
     jobType,
-    role
+    role,
+    validationRule,
   }

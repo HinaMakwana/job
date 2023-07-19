@@ -1,4 +1,3 @@
-
 /**
  * JobController
  *
@@ -7,7 +6,7 @@
  */
 const id = sails.config.custom;
 const Statuscode = sails.config.constant.HttpStatusCode;
-
+let message = sails.config.getMessage
 module.exports = {
   /**
    * @description post job for users
@@ -15,15 +14,25 @@ module.exports = {
    */
   post: async (req,res) => {
     const userId = req.userData.userId;
+    let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId);
-      let {title, company,workplaceType,jobLocation,jobType,description} = req.body
+      let {title, company,workplaceType,jobLocation,jobType,description} = req.body;
       if(user.role == 'manager') {
+        const result = Job.validateBeforeCreateOrUpdate({
+          title,company,workplaceType,jobLocation,jobType,description
+        })
+        if(result.hasError) {
+          return res.status(Statuscode.BAD_REQUEST).json({
+            message : message("Validation",lang),
+            errors : result
+          })
+        }
         let findTitle = await Job.findOne({title: title, isDeleted: false,postedBy: userId})
         if(findTitle) {
           return res.status(Statuscode.CONFLICT).json({
             status: Statuscode.CONFLICT,
-            message : 'You have already posted this title of job'
+            message : message("Job.AlreadyPosted",lang)
           })
         }
         const data = {
@@ -39,19 +48,19 @@ module.exports = {
         let postJob = await Job.create(data).fetch()
         return res.status(Statuscode.CREATED).json({
           status: Statuscode.CREATED,
-          message: 'job posted successfully',
+          message: message("Job.Posted",lang),
           jobDetails: postJob
         })
         } else {
           return res.status(Statuscode.UNAUTHORIZED).json({
             status: Statuscode.UNAUTHORIZED,
-            message: 'user unauthorized'
+            message: message("Unauthorized",lang)
           })
         }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error!" + error
+        message: message("ServerError",lang) + error
       })
     }
   },
@@ -61,30 +70,45 @@ module.exports = {
    */
   updateJob: async (req,res) => {
     const userId = req.userData.userId;
+    let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
-      let {title,description,jobId} = req.body
-      let findJob = await Job.findOne({id: jobId,isDeleted: false})
-      if(!findJob) {
-        return res.status(Statuscode.NOT_FOUND).json({
-          status: Statuscode.NOT_FOUND,
-          message: 'Job not found'
+      if(user.role == 'manager') {
+        let {title,description,jobId} = req.body
+        let result = Job.validateBeforeCreateOrUpdate({title,description})
+        if(result.hasError) {
+          return res.status(Statuscode.BAD_REQUEST).json({
+            status: Statuscode.BAD_REQUEST,
+            error: result
+          })
+        }
+        let findJob = await Job.findOne({id: jobId,isDeleted: false})
+        if(!findJob) {
+          return res.status(Statuscode.NOT_FOUND).json({
+            status: Statuscode.NOT_FOUND,
+            message: message("Job.NotFound",lang)
+          })
+        }
+        const data = {
+          title : title,
+          description : description
+        }
+        let updateJob = await Job.update({postedBy: user.id,id: jobId},data).fetch()
+        return res.status(Statuscode.OK).json({
+          status: Statuscode.OK,
+          message: message("Job.Updated",lang),
+          Data: updateJob
+        })
+      } else {
+        return res.status(Statuscode.UNAUTHORIZED).json({
+          status: Statuscode.UNAUTHORIZED,
+          message: message("Unauthorized",lang)
         })
       }
-      const data = {
-        title : title,
-        description : description
-      }
-      let updateJob = await Job.update({postedBy: user.id},data).fetch()
-      return res.status(Statuscode.OK).json({
-        status: Statuscode.OK,
-        message: 'updated successfully',
-        Data: updateJob
-      })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: message("ServerError",lang)
       })
     }
 
@@ -95,6 +119,7 @@ module.exports = {
    */
   deleteJob: async (req,res) => {
     const userId = req.userData.userId;
+    let lang = req.getLocale();
     try {
       await sails.helpers.commonFun(userId);
       let { jobId } = req.body
@@ -102,20 +127,20 @@ module.exports = {
       if(!findId) {
         return res.status(Statuscode.NOT_FOUND).json({
           status: Statuscode.NOT_FOUND,
-          message: 'job post not found'
+          message: message("Job.NotFound",lang)
         })
       }
       const deleteJob = await Job.update({id: findId.id},{isDeleted: true}).fetch()
       if(deleteJob) {
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
-          message: 'Job deleted',
+          message: message("Job.Deleted",lang),
         })
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: message("ServerError",lang)
       })
     }
   },
@@ -124,6 +149,7 @@ module.exports = {
    * @route (GET job)
    */
   listAllJob: async (req,res) => {
+    let lang = req.getLocale();
     try {
       const limit = 4;
       let {page} = req.query;
@@ -136,7 +162,7 @@ module.exports = {
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
-          message: 'received bad request'
+          message: message("BadRequest",lang)
         })
       }
       return res.status(Statuscode.OK).json({
@@ -147,7 +173,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error" + error
+        message: message("ServerError",lang) + error
       })
     }
   },
@@ -157,13 +183,14 @@ module.exports = {
    */
   listJob: async (req,res) => {
     const userId = req.userData.userId
+    let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
       let allJobs = await Job.find({postedBy:user.id,isDeleted:false})
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
-          message: 'received bad request'
+          message: message("BadRequest",lang)
         })
       }
       return res.status(Statuscode.OK).json({
@@ -173,7 +200,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: message("ServerError",lang)
       })
     }
   },
@@ -183,6 +210,7 @@ module.exports = {
    */
   listOne: async (req,res) => {
     const userId = req.userData.userId
+    let lang = req.getLocale();
     try {
       let {id} = req.params
       await sails.helpers.commonFun(userId)
@@ -190,7 +218,7 @@ module.exports = {
       if(!getOneJob) {
         return res.status(Statuscode.NOT_FOUND).json({
           status: Statuscode.NOT_FOUND,
-          message: 'post not found'
+          message: message("Job.Posted",lang)
         })
       }
       return res.status(Statuscode.OK).json({
@@ -200,7 +228,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error" + error
+        message: message("ServerError",lang) + error
       })
     }
   },
@@ -210,6 +238,7 @@ module.exports = {
    */
   searchJob: async (req,res) => {
     const userId = req.userData.userId
+    let lang = req.getLocale();
     try {
       let {title} = req.body
       const limit = 3;
@@ -245,13 +274,13 @@ module.exports = {
       } else {
         return res.status(Statuscode.SERVER_ERROR).json({
           status: Statuscode.SERVER_ERROR,
-          message: "Server Error"
+          message: message("ServerError",lang)
         })
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: message("ServerError",lang)
       })
     }
   },
@@ -261,6 +290,7 @@ module.exports = {
    */
   applyJob: async (req,res) => {
     const userId = req.userData.userId
+    let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
@@ -269,19 +299,19 @@ module.exports = {
         if(!findPost) {
           return res.status(Statuscode.NOT_FOUND).json({
             status: Statuscode.NOT_FOUND,
-            message: 'Not found'
+            message: message("Job.NotFound",lang)
           })
         }
-        await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
+       await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
-          message: 'email send'
+          message: message("Job.SenMail",lang)
         })
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: "Server Error"
+        message: message("ServerError",lang)
       })
     }
   },

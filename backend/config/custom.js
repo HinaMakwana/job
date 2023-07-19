@@ -12,11 +12,13 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const nodemailer = require('nodemailer')
+const Validator = require('validatorjs')
 module.exports.custom = {
   uuid,
   bcrypt,
   jwt,
-  nodemailer
+  nodemailer,
+  Validator,
   /***************************************************************************
   *                                                                          *
   * Any other custom config this Sails app should use during development.    *

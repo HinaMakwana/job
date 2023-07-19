@@ -8,7 +8,7 @@ export default function Article() {
                 <p className="text-xl">We’re unlocking community knowledge in a new way. Experts add insights directly into each article, started with the help of AI.</p>
             </div>
             <div className="basis-3/5">
-                <Button.Group >
+                <div >
                     <div className="flex flex-wrap gap-3">
                         <div>
                             <Button className="bg-transparent text-black border-2 border-black rounded-full w-32 h-14 hover:text-white hover:border-transparent">
@@ -61,7 +61,7 @@ export default function Article() {
                             </Button>
                         </div>
                     </div>
-                </Button.Group>
+                </div>
             </div>
         </section>
     )
