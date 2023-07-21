@@ -1,65 +1,38 @@
 /**
- * User.js
+ * Education.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-const role = sails.config.constant.role
+const eduType = sails.config.constant.eduType
 const Validator = sails.config.custom.Validator
-const validateRule = sails.config.constant.validationRule.User
+const validateRule = sails.config.constant.validationRule.Education
 module.exports = {
 
   attributes: {
 
-    firstName : {
-      type : 'string',
-      required : true
+    educationType : {
+      type: 'string',
+      isIn : [eduType.ssc,eduType.hsc,eduType.degree],
+      required : false
     },
-    lastName : {
-      type : 'string',
-      required : true
-    },
-    email : {
-      type : 'string',
-      required : true,
-      isEmail : true
-    },
-    password : {
-      type : 'string',
-      required : true
-    },
-    token : {
+    degreeName : {
       type : 'string',
       allowNull : true
     },
-    isDeleted : {
-      type : 'boolean',
-      defaultsTo : false
+    instituteName : {
+      type : 'string'
     },
-    imageUrl : {
-      type : 'string',
-      allowNull : true
+    year : {
+      type : 'string'
     },
-    role : {
-      type : 'string',
-      required: true,
-      isIn : [role.manager,role.client]
-    },
-    //through association
-    likePosts : {
-      collection : 'job',
-      via : 'clients',
-      through : 'like'
-    },
-    //one-to-one relation
-    moreData : {
-      model: 'moreinfo'
+    grade : {
+      type : 'string'
     },
     //one-to-many association
-    Education : {
-      collection: 'education',
-      via : 'userData'
-    },
+    userData : {
+      model : 'user'
+    }
   },
 
   ValidationBeforeCreate : (data) => {
@@ -86,4 +59,5 @@ module.exports = {
     }
     return result
   }
+
 };

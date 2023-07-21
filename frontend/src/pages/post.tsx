@@ -1,11 +1,12 @@
 import Select from "react-select";
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {options,options1,jobLocation,jobType,jobTime} from '../components/util/jobTitle.json'
-import { FormElement, Textarea, Navbar, Text } from "@nextui-org/react";
+import { FormElement, Textarea, Navbar, Text, Dropdown } from "@nextui-org/react";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Profile from "@/components/profile";
 
 interface role {
     value: string,
@@ -13,6 +14,7 @@ interface role {
   }
 function Post() {
 	const router = useRouter()
+	const [action,setAction] = useState<any>()
 	const [isOpen, setIsOpen] = useState(false);
     const [Option, setOption] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +27,7 @@ function Post() {
 	const [selectedOption, setSelectedOption] = useState<role>();
 	const [selectOption, setSelectOption] = useState<role>()
 	const [form, setForm] = useState({description:''})
-	const token = getCookie('authToken')
+	// const token = getCookie('authToken')
 
 	const handleChange = (e:React.ChangeEvent<FormElement>)=> {
 		const {name , value} = e.target as HTMLTextAreaElement ;
@@ -104,7 +106,7 @@ function Post() {
 			const a = await fetch('http://127.0.0.1:1337/job/post',{
 				method: 'POST',
 				headers :{
-					'Authorization' : `Bearer ${token}`
+					'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
 					},
 				body: JSON.stringify({
 					title: Option,
@@ -120,7 +122,7 @@ function Post() {
 				toast.success('Job posted successfully',{
 					position:'top-right'
 				})
-				router.push('success')
+				router.push({pathname:'success',query:{email: router.query.email}})
 			} else if(a.status == 409) {
 				toast.warning('Title is already added by you',{
 					position: 'top-right'
@@ -147,25 +149,7 @@ function Post() {
   return (
 	<div>
 		<div>
-			<Navbar variant="sticky" className="lg:px-32 md:px-24 sm:px-16">
-				<Navbar.Brand
-				css={{
-					"@xs": {
-					w: "12%",
-					},
-				}}
-				>
-					<img src="logo.jpg" alt="logo" className="h-16" />
-					<Text b color="inherit">
-						JobPortal
-					</Text>
-				</Navbar.Brand>
-				<Navbar.Content
-				// enableCursorHighlight
-				css={{gap:'50px'}}
-				>
-				</Navbar.Content>
-			</Navbar>
+			<Profile />
 		</div>
 		<div className="bg-gradient-to-r from-gray-500 to-gray-500 h-[92.4vh] flex">
 			<div className='border-2 w-fit m-auto p-5 bg-white mt- h-fit'>

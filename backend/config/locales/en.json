@@ -22,5 +22,12 @@
   "Job.NotFound" : "Job Post Not Found",
   "Job.Updated" : "Job updated Successfully",
   "Job.Deleted" : "Job deleted Successfully",
-  "Job.SendMail" : "Send Mail Successfully"
+  "Job.SendMail" : "Send Mail Successfully",
+
+  "Like.Post" : "Post is Liked by you",
+  "Unlike.Post" : "Post is Unliked by you",
+
+  "Education.Added" : "Education added to profile",
+  "Education.Confict" : "Education is already added by you",
+  "Education.ConflictYear" : "Education year is invalid"
 }

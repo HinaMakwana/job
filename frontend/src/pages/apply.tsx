@@ -1,6 +1,8 @@
-import { Card, FormElement, Input, Pagination } from "@nextui-org/react";
+import Profile from "@/components/profile";
+import { Card, Dropdown, FormElement, Pagination } from "@nextui-org/react";
 import { Navbar,Text } from '@nextui-org/react'
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react'
 interface post {
   id: string,
@@ -9,6 +11,7 @@ interface post {
   workplaceType: string,
   description:string,
   jobLocation:string,
+  likedByUsers:any,
   postedBy:{
     firstName:string,
     lastName:string,
@@ -16,12 +19,15 @@ interface post {
   }
 }
 function Apply() {
-  const token = getCookie('authToken')
+  // const token = getCookie('authToken')
   const [currentPage,setCurrentPage] = useState(1)
   const [select,setSelect] = useState({title:''})
   const [data,setData] = useState<any[]>([])
   const [post,setPost] = useState<post>()
   const [totalPage,setTotalPage] = useState(10)
+  const [isFill,setFill] = useState(false)
+  const router = useRouter()
+
   const handleChange = (e:React.ChangeEvent<FormElement>)=> {
     const {name , value} = e.target as HTMLInputElement ;
         setSelect((preform) => ({
@@ -35,7 +41,7 @@ function Apply() {
     const search = await fetch(`http://127.0.0.1:1337/job/search?page=${currentPage}`,{
       method: 'POST',
       headers: {
-        'Authorization' : `Bearer ${token}`
+        'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
       },
       body: JSON.stringify(select)
     })
@@ -46,22 +52,24 @@ function Apply() {
     setTotalPage(final)
   }
   const getPost = async (job:string) => {
-    const search = await fetch('http://127.0.0.1:1337/job/listone',{
-      method: 'POST',
+    const search = await fetch(`http://127.0.0.1:1337/job/listone/${job}`,{
+      method: 'GET',
       headers: {
-        'Authorization' : `Bearer ${token}`
-      },
-      body: JSON.stringify({id:job})
+        'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
+      }
     })
     const result = await search.json()
     console.log('result',result);
+    if(result.totalLike == 1) {
+      setFill(true)
+    }
     setPost(result.data )
   }
   const sendMail = async (postId:string,managerEmail:string) => {
     const apply = await fetch('http://127.0.0.1:1337/apply',{
       method:'POST',
       headers: {
-        'Authorization' : `Bearer ${token}`
+        'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
       },
       body: JSON.stringify({managerEmail:managerEmail,postId:postId})
     })
@@ -73,39 +81,30 @@ function Apply() {
 			method: 'GET'
 		})
 		const content = await a.json()
-    const total = Math.floor((content.count) / 3)
-    console.log(total);
+    const total = Math.ceil((content.count) / 4)
+    console.log(content,'jk');
     setTotalPage(total)
 		setData(content.List)
   };
+  const likePost = async () => {
+    if(post) {
+      let likeUnlike = await fetch(`http://127.0.0.1:1337/like/${post.id}`,{
+        method: 'POST',
+        headers: {
+          Authorization : `Bearer ${localStorage.getItem('authToken')}`
+        }
+      })
+      let final = await likeUnlike.json()
+      console.log(final);
+    }
+  }
   useEffect(()=>{
     handlePageChange(1)
   },[])
   return (
     <div>
       <div>
-        <Navbar variant="sticky" className="lg:px-32 md:px-24 sm:px-16">
-          <Navbar.Brand
-          css={{
-            "@xs": {
-            w: "12%",
-            },
-          }}
-          >
-            <img src="logo.jpg" alt="logo" className="h-16" />
-            <Text b color="inherit">
-              JobPortal
-            </Text>
-          </Navbar.Brand>
-          <Navbar.Content
-          // enableCursorHighlight
-          css={{gap:'50px'}}
-          >
-          <Navbar.Link href="#" className="hover:opacity-100 opacity-50">
-            {/* <button className='border-2 w-32 p-2 rounded-lg bg-sky-100 hover:bg-sky-700'>My post</button> */}
-          </Navbar.Link>
-          </Navbar.Content>
-        </Navbar>
+        <Profile />
       </div>
         { post ?
           (
@@ -114,18 +113,33 @@ function Apply() {
               <div className="mt-10 flex justify-center">
                 <Card css={{ mw: "700px" }}>
                   <Card.Body>
-                    <div className="flex flex-col">
-                      <span className="text-lg">company name: {post.company}</span>
-                      <span className="text-lg">Workplace type: {post.workplaceType}</span>
-                      <span className="text-lg">Job location: {post.jobLocation}</span>
+                    <div className="flex flex-row">
+                      <div className="flex flex-col">
+                        <span className="text-lg">company name: {post.likedByUsers}</span>
+                        <span className="text-lg">Workplace type: {post.workplaceType}</span>
+                        <span className="text-lg">Job location: {post.jobLocation}</span>
+                      </div>
+                      <div className="absolute right-10" onClick={likePost}>
+                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" onClick={()=>{if(isFill == true){setFill(false)}else{setFill(true)}}} className={`h-5 w-5 stroke-black stroke-2`} style={{fill : (isFill) ? 'blue' : 'white'}} viewBox="0 0 51.997 51.997">
+                        <path d="M51.911,16.242C51.152,7.888,45.239,1.827,37.839,1.827c-4.93,0-9.444,2.653-11.984,6.905
+                          c-2.517-4.307-6.846-6.906-11.697-6.906c-7.399,0-13.313,6.061-14.071,14.415c-0.06,0.369-0.306,2.311,0.442,5.478
+                          c1.078,4.568,3.568,8.723,7.199,12.013l18.115,16.439l18.426-16.438c3.631-3.291,6.121-7.445,7.199-12.014
+                          C52.216,18.553,51.97,16.611,51.911,16.242z"/>
+                        </svg>
+                      </div>
                     </div>
-                    <div className="text-lg border-2 p-1">Description: <br />{post.description}</div>
-                    <div className="flex flex-col border-2 p-1">
-                      <span className="text-lg">postedBy: {post.postedBy.firstName} {post.postedBy.lastName}</span>
-                      <span className="text-lg">{post.postedBy.email}</span>
+                    <div className="text-lg border-2 p-1 rounded-lg">Description: <br />{post.description}</div>
+                    <span>PostedBy:</span>
+                    <div className="flex flex-row border-2 p-1 rounded-lg">
+                      <img src="user.svg" className="h-10 w-10"/>
+                      <div className="flex flex-col ml-5">
+                        <span className="text-lg">Name: {post.postedBy.firstName} {post.postedBy.lastName}</span>
+                        <span className="text-lg">Email: {post.postedBy.email}</span>
+                      </div>
                     </div>
-                    <div>
-                      <button className="border-2 p-2 rounded-xl bg-blue-400 mt-5 hover:bg-sky-500 hover:scale-105" onClick={()=>{sendMail(post.id,post.postedBy.email)}} >Apply Now</button>
+                    <div className="flex gap-3 mt-5">
+                      <button className="border-2 w-20 hover:bg-blue-600 p-2 rounded-lg" onClick={()=>{sendMail(post.id,post.postedBy.email)}}>Apply</button>
+                      <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -156,17 +170,18 @@ function Apply() {
                       <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}} key={index}>
                         <Card.Body>
                           <div className="flex gap-3 flex-col">
-                            <div>
+                            <div className="">
                               <h1>{post.title}</h1>
+                              <div className="flex absolute right-9">
+                                <img src="like.svg" className="h-4 mt-1 mr-1" />
+                                <span className="">{post.likeByUsers.length}</span>
+                              </div>
                             </div>
                             <div className="flex flex-col">
                               <span>Company:{post.company}</span>
                               <span>Location:{post.jobLocation}</span>
                             </div>
-                            <div className="flex gap-3">
-                              <button className="border-2 w-20 hover:bg-blue-600 p-2 rounded-lg" onClick={()=>{sendMail(post.id,post.postedBy.email)}}>Apply</button>
-                              <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
-                            </div>
+
                           </div>
                         </Card.Body>
                       </Card>

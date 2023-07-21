@@ -4,10 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
-const { lazy } = require("react");
-
-
 const id = sails.config.custom;
 const bcrypt = sails.config.custom.bcrypt;
 const jwt = sails.config.custom.jwt;
@@ -104,7 +100,9 @@ module.exports = {
                 status: Statuscode.OK,
                 message: message("User.Login",lang),
                 token: token,
-                role: findUser.role
+                role: findUser.role,
+                name: findUser.firstName.concat(' ',findUser.lastName),
+                email: findUser.email
             })
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
@@ -151,19 +149,47 @@ module.exports = {
      * @description see profile of user
      * @route (GET /user/profile)
      */
-    profile: async (req,res) => {
+    myProfile: async (req,res) => {
         const userId = req.userData.userId;
         let lang = req.getLocale();
         try {
-            const user = await sails.helpers.commonFun(userId);
+            let getUserProfile = await User.findOne({id: userId})
+            .select(['firstName','lastName','email','role'])
+            .populate('likePosts',{omit:['createdAt','updatedAt','isDeleted']})
+            .populate('moreData')
+            .populate('Education',{omit: ['createdAt','updatedAt']})
             res.status(Statuscode.OK).json({
                 status: Statuscode.OK,
-                user: user
+                user: getUserProfile
             })
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
                 status: Statuscode.SERVER_ERROR,
-                message: message("ServerError",lang)
+                message: message("ServerError",lang) + error
+            })
+        }
+    },
+    /**
+     * @description watch other user profile
+     * @Route GET /user/:id
+     */
+    profile : async (req,res) => {
+        let lang = req.getLocale();
+        try {
+            let id = req.params.id
+            let userData = await User.findOne({id:id})
+            .select(['firstName','lastName','email','role'])
+            .populate('likePosts',{omit:['createdAt','updatedAt','isDeleted']})
+            .populate('moreData')
+            .populate('Education',{omit: ['createdAt','updatedAt']})
+            res.status(Statuscode.OK).json({
+                status: Statuscode.OK,
+                user: userData
+            })
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                status : Statuscode.SERVER_ERROR,
+                message : message('ServerError',lang)
             })
         }
     },
@@ -209,5 +235,179 @@ module.exports = {
                 message: message("ServerError",lang)
             })
         }
-    }
+    },
+    /**
+     * @description list all logged users
+     * @Route GET /list/users
+     */
+    listAllUsers: async (req,res) => {
+        let lang = req.getLocale()
+        try {
+            let findAllUsers = await User.find({isDeleted: false}).select(['firstName','lastName','email','role']).populate('moreData')
+            return res.status(Statuscode.OK).json({
+                data: findAllUsers
+            })
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang) + error
+            })
+        }
+    },
+    /**
+     * @description add education detail of user
+     * @Route Post /add/education
+     */
+    addEducation: async (req,res) => {
+        const lang = req.getLocale()
+        const userId = req.userData.userId
+        const currentyear = new Date().getFullYear()
+        try {
+            let user = await sails.helpers.commonFun(userId)
+            let {
+                educationType,
+                instituteName,
+                year,
+                grade,
+                degreeName
+            } = req.body ;
+            let result = await Education.ValidationBeforeCreate({educationType,instituteName,year,grade,degreeName})
+            if(result.hasError) {
+                return res.status(Statuscode.FORBIDDEN).json({
+                    status: Statuscode.FORBIDDEN,
+                    message: message('Validation',lang),
+                    error : result.error
+                })
+            }
+            if(user.role == 'client') {
+                let eduData = {
+                    id : id.uuid(),
+                    educationType : educationType,
+                    instituteName : instituteName,
+                    year : year,
+                    grade : grade,
+                    userData : userId
+                }
+                let validateData = await Education.findOne({educationType: educationType})
+                if(validateData) {
+                    return res.status(Statuscode.CONFLICT).json({
+                        status: Statuscode.CONFLICT,
+                        message: message('Education.Confict',lang)
+                    })
+                } else {
+                    let checkYear = await Education.findOne({year:year})
+                    if(checkYear) {
+                        return res.status(Statuscode.BAD_REQUEST).json({
+                            status: Statuscode.BAD_REQUEST,
+                            message: message('Education.ConflictYear',lang)
+                        })
+                    } else if((year >= currentyear)){
+                        return res.status(Statuscode.BAD_REQUEST).json({
+                            status: Statuscode.BAD_REQUEST,
+                            message: message('Education.ConflictYear',lang)
+                        })
+                    }
+                }
+                let addEducation = await Education.create({...eduData,degreeName:degreeName}).fetch()
+                await User.addToCollection(userId,'Education',addEducation.id)
+                return res.status(Statuscode.CREATED).json({
+                    status: Statuscode.CREATED,
+                    message: message('Education.Added',lang),
+                    data: addEducation
+                })
+            } else {
+                res.status(Statuscode.UNAUTHORIZED).json({
+                    status: Statuscode.UNAUTHORIZED,
+                    message: message('Unauthorized',lang)
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                status: Statuscode.SERVER_ERROR,
+                message: message('ServerError',lang) + error
+            })
+        }
+    },
+    /**
+     * @description add more information about user
+     * @Route POST /add/moreInfo
+     */
+    addMoreInfo : async (req,res) => {
+        const lang = req.getLocale()
+        const userId = req.userData.userId
+        try {
+            let user = await sails.helpers.commonFun(userId)
+            let {Headline, Skill, Location} = req.body ;
+            if(user.role == 'client') {
+                let eduData = {
+                    id : id.uuid(),
+                    Headline : Headline,
+                    Skill : Skill,
+                    Location : Location,
+                    user : userId
+                }
+                let findData = await MoreInfo.findOne({user:userId})
+                if(findData) {
+                    return res.status(Statuscode.BAD_REQUEST).json({
+                        status: Statuscode.BAD_REQUEST,
+                        message: message('BadRequest',lang)
+                    })
+                }
+                let createMoreInfo = await MoreInfo.create(eduData).fetch()
+                await User.update({id:userId},{moreData:createMoreInfo.id})
+                return res.status(Statuscode.CREATED).json({
+                    status: Statuscode.CREATED,
+                    data: createMoreInfo
+                })
+            } else {
+                res.status(Statuscode.UNAUTHORIZED).json({
+                    status: Statuscode.UNAUTHORIZED,
+                    message: message('Unauthorized',lang)
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                status: Statuscode.SERVER_ERROR,
+                message: message('ServerError',lang)
+            })
+        }
+    },
+    /**
+     * @description update user profile
+     * @Route PATCH /update/profile
+     */
+    updateProfile : async (req,res) => {
+        const lang = req.getLocale()
+        const userId = req.userData.userId
+        try {
+            let user = await sails.helpers.commonFun(userId)
+            let {Headline, Skill, Location,firstName, lastName} = req.body ;
+            if(user.role == 'client') {
+                let moreData = {
+                    Headline : Headline,
+                    Skill : Skill,
+                    Location : Location,
+                }
+                let findData = await MoreInfo.findOne({user:userId})
+                if(findData && user) {
+                    let updateInfo = await MoreInfo.update({user:userId},moreData).fetch()
+                    let updateProfile = await User.update({id:userId},{firstName: firstName, lastName: lastName}).fetch()
+                    return res.status(Statuscode.OK).json({
+                        status: Statuscode.OK,
+                        data : updateProfile,
+                        data1 : updateInfo
+                    })
+                }
+            } else {
+                res.status(Statuscode.UNAUTHORIZED).json({
+                    status: Statuscode.UNAUTHORIZED,
+                    message: message('Unauthorized',lang)
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                status: Statuscode.SERVER_ERROR,
+                message: message('ServerError',lang) + error
+            })
+        }
+    },
 }

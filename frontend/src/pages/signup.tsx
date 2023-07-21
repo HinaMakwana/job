@@ -26,27 +26,21 @@ export default function Signup() {
         })
         const content = await a.json()
         console.log(content,'ytytyt');
-
-        setCookie("authToken",content.token,{
-            path: '/',
-            maxAge: 3600,
-            sameSite: true,
-            secure: true
-          })
+        localStorage.setItem('authToken',content.token)
+        // setCookie("authToken",content.token,{
+        //     path: '/',
+        //     maxAge: 3600,
+        //     sameSite: true,
+        //     secure: true
+        //   })
         if(a.status === 200) {
             toast.success('Login successfully', {
                 position: toast.POSITION.TOP_RIGHT
             });
             if(content.role == 'manager') {
-                setCookie("authToken",content.token,{
-                    path: '/',
-                    maxAge: 3600,
-                    sameSite: true,
-                    secure: true
-                  })
-                router.push('post')
+                router.push({pathname:'post'})
             } else {
-                router.push('apply')
+                router.push({pathname:'addMore'})
             }
         } else if(a.status == 404) {
             toast.error('Email is Invalid', {
@@ -115,7 +109,7 @@ export default function Signup() {
                     <Button onClick={submit} type="submit" className="bg-blue-600 hover:bg-blue-200">
                         Sign In
                     </Button>
-                    <span className='text-blue-600 mt-3'><Link href='/signup'>Don't have an account?</Link></span>
+                    <span className='text-blue-600 mt-3'><Link href='/auth'>Don't have an account?</Link></span>
                 </form>
             </div>
             <div className='basis-1/2 m-auto'>

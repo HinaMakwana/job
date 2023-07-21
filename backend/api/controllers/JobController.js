@@ -157,7 +157,7 @@ module.exports = {
         page = 1;
       }
       let skip = (page - 1) * limit
-      let allJobs = await Job.find({isDeleted:false}).skip(skip).limit(limit).populate('postedBy')
+      let allJobs = await Job.find({isDeleted:false}).skip(skip).limit(limit).populateAll()
       let countAllJob = await Job.count({isDeleted:false})
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
@@ -186,7 +186,7 @@ module.exports = {
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
-      let allJobs = await Job.find({postedBy:user.id,isDeleted:false})
+      let allJobs = await Job.find({postedBy:user.id,isDeleted:false}).populate('likeByUsers',{limit:3,select:['firstName','lastName','email']})
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
@@ -206,7 +206,7 @@ module.exports = {
   },
   /**
    * @description listOne job post
-   * @route (POST job/listone)
+   * @route (GET job/listone)
    */
   listOne: async (req,res) => {
     const userId = req.userData.userId
@@ -214,16 +214,17 @@ module.exports = {
     try {
       let {id} = req.params
       await sails.helpers.commonFun(userId)
-      let getOneJob = await Job.findOne({id:id}).populate('postedBy')
+      let getOneJob = await Job.findOne({id:id}).populate('postedBy').populate('likeByUsers',{where: {id:userId},select:['firstName','lastName','email']})
       if(!getOneJob) {
         return res.status(Statuscode.NOT_FOUND).json({
           status: Statuscode.NOT_FOUND,
-          message: message("Job.Posted",lang)
+          message: message("Job.NotFound",lang)
         })
       }
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
-        data: getOneJob
+        data: getOneJob,
+        totalLike: getOneJob.likeByUsers.length
       })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({

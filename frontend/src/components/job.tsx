@@ -14,7 +14,7 @@ export default function Job() {
                 <span className="text-5xl">Find the right job or internship for you</span>
             </div>
             <div className="basis-3/5">
-                <Button.Group>
+                <div>
                     <div className="flex flex-wrap gap-3">
                         <div>
                             <Button onClick={renderPage} className="bg-transparent text-black border-2 border-black rounded-full w-32 h-14 hover:text-white hover:border-transparent">
@@ -132,7 +132,7 @@ export default function Job() {
                             </Button>
                         </div>
                     </div>
-                </Button.Group>
+                </div>
             </div>
         </section>
     )

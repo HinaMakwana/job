@@ -25,7 +25,12 @@
     pt : 'part-time',
     contract : 'contract'
   }
-
+  const eduType = {
+    ssc : 'SSC (10th)',
+    hsc : 'HSC (12th)',
+    degree : 'degree'
+  }
+  const currentyear = new Date().getFullYear()
   const validationRule = {
     User : {
       firstName : "required|min:3",
@@ -51,6 +56,27 @@
         { "in" : [jobType.contract, jobType.ft, jobType.pt]}
       ],
       description: "required"
+    },
+    Education : {
+      educationType: [
+        "required",
+        {"in" : [eduType.ssc,eduType.hsc,eduType.degree]}
+      ],
+      degreeName: [
+        { required_if : ['educationType','degree']}
+      ],
+    instituteName : [
+      {
+        required_with : "educationType"
+      }
+    ],
+    year : [
+      { required_with : ["instituteName"]},
+      {digits:4},
+    ],
+    grade : [
+      { required_with : ["year"]}
+    ],
     }
   }
 
@@ -60,4 +86,5 @@
     jobType,
     role,
     validationRule,
+    eduType,
   }

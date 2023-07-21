@@ -43,6 +43,12 @@ module.exports = {
     isDeleted: {
       type: 'boolean',
       defaultsTo: false
+    },
+    //through association
+    likeByUsers : {
+      collection: 'user',
+      via: 'likedPost',
+      through: 'like'
     }
 
   },

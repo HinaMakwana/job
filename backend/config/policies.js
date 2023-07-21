@@ -20,11 +20,18 @@ module.exports.policies = {
   // '*': true,
   UserController : {
     logout : 'isAuthorized',
+    myProfile : 'isAuthorized',
     profile : 'isAuthorized',
-    uploadImage : 'isAuthorized'
+    uploadImage : 'isAuthorized',
+    updateProfile  : 'isAuthorized',
+    addEducation : 'isAuthorized',
+    addMoreInfo : 'isAuthorized'
   },
   JobController : {
     listAllJob:true,
+    '*' : 'isAuthorized'
+  },
+  LikeController : {
     '*' : 'isAuthorized'
   }
 

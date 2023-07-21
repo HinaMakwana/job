@@ -54,7 +54,7 @@ function Auth() {
                     position: toast.POSITION.TOP_RIGHT
                 })
             } else if(a.status === 400) {
-                toast.warning('Password and Confirm passwrd must match',{
+                toast.warning(content.error,{
                     position: toast.POSITION.TOP_RIGHT
                 })
             }
