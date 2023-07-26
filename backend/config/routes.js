@@ -18,7 +18,7 @@ module.exports.routes = {
     'POST /user/uploadImage' : 'UserController.uploadImage',
     'GET /list/users' : 'UserController.listAllUsers',
     'POST /add/education' : 'UserController.addEducation',
-    'POST /add/moreInfo' : 'UserController.addMoreInfo',
+    'POST /add/moreInfo/:id' : 'UserController.addMoreInfo',
     'PATCH /update/profile' : 'UserController.updateProfile',
 
     //jobController routes
@@ -32,5 +32,6 @@ module.exports.routes = {
     'POST /apply' : 'JobController.applyJob',
 
     //LikeController routes
-    'POST /like/:id' : 'LikeController.likeUnlike'
+    'POST /like/:id' : 'LikeController.likeUnlike',
+    'POST /test' : 'LikeController.test',
 };

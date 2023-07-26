@@ -11,7 +11,10 @@ const Statuscode = sails.config.constant.HttpStatusCode;
 let message = sails.config.getMessage;
 
 module.exports = {
-
+	/**
+	 * @description like and unlike post only by client
+	 * @Route POST like/:id
+	 */
 	likeUnlike : async (req,res) => {
 		const userId = req.userData.userId;
 		let lang = req.getLocale();
@@ -61,5 +64,23 @@ module.exports = {
 				message: message('ServerError',lang) + error
 			})
 		}
+	},
+	test : async (req,res) => {
+		try {
+			let query = `SELECT "j"."id", "l"."likedPost"
+			FROM job AS j
+			INNER JOIN "like" AS "l"
+			ON "j"."id"="l"."likedPost"`;
+			let run = await sails.sendNativeQuery(query,[])
+			return res.status(200).json({
+				data:run
+			})
+		} catch (error) {
+			return res.status(500).json({
+				message : 'server error' + error,
+				error: error
+			})
+		}
 	}
+
 };

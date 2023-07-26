@@ -87,6 +87,7 @@ export default function Navigation() {
               className="ml-20"
             >
               <Link
+                key={index}
                 color="inherit"
                 css={{
                   minWidth: "100%",

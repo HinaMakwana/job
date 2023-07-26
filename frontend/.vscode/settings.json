@@ -1,0 +1,15 @@
+{
+	"editor.autoIndent": "full",
+	"editor.guides.indentation": true,
+	"workbench.tree.indent": 8,
+	"editor.guides.highlightActiveIndentation": true,
+	"workbench.tree.renderIndentGuides": "onHover",
+	"html.format.indentHandlebars": false,
+	"html.format.indentInnerHtml": false,
+	"html.format.wrapAttributesIndentSize": null,
+	"typescript.format.indentSwitchCase": false,
+	"prettier.vueIndentScriptAndStyle": false,
+	"editor.wrappingIndent": "same",
+	"prettier.useTabs": false,
+	"editor.tabSize": 2
+}

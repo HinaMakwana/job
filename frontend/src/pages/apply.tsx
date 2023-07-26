@@ -1,9 +1,9 @@
 import Profile from "@/components/profile";
-import { Card, Dropdown, FormElement, Pagination } from "@nextui-org/react";
-import { Navbar,Text } from '@nextui-org/react'
+import { Card, FormElement, Pagination } from "@nextui-org/react";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react'
+import { NumericLiteral } from "typescript";
 interface post {
   id: string,
   title: string,
@@ -21,36 +21,35 @@ interface post {
 function Apply() {
   // const token = getCookie('authToken')
   const [currentPage,setCurrentPage] = useState(1)
-  const [select,setSelect] = useState({title:''})
+  const [select,setSelect] = useState<any>('')
   const [data,setData] = useState<any[]>([])
   const [post,setPost] = useState<post>()
   const [totalPage,setTotalPage] = useState(10)
   const [isFill,setFill] = useState(false)
+  const [totalLike,setLike] = useState(0)
   const router = useRouter()
 
   const handleChange = (e:React.ChangeEvent<FormElement>)=> {
     const {name , value} = e.target as HTMLInputElement ;
-        setSelect((preform) => ({
-      ...preform ,
-      [name] :value,
-    }));
-    }
+    console.log('name',value);
+    setSelect(value)
+  }
   const searchData = async (e:React.MouseEvent<HTMLButtonElement>) => {
-    console.log(currentPage,'current');
     e.preventDefault()
     const search = await fetch(`http://127.0.0.1:1337/job/search?page=${currentPage}`,{
       method: 'POST',
       headers: {
         'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
       },
-      body: JSON.stringify(select)
-    })
-    const output = await search.json()
-    console.log(output);
-    const final = Math.ceil((output.count) / 3)
+      body: JSON.stringify({title:select})
+    });
+    const output = await search.json();
+    const final = Math.ceil((output.count) / 4)
     setData(output.data.rows)
     setTotalPage(final)
+    setLike(output.likeByUsers)
   }
+
   const getPost = async (job:string) => {
     const search = await fetch(`http://127.0.0.1:1337/job/listone/${job}`,{
       method: 'GET',
@@ -74,17 +73,30 @@ function Apply() {
       body: JSON.stringify({managerEmail:managerEmail,postId:postId})
     })
   }
-  const handlePageChange = async (newPage:any) => {
-    console.log(newPage,'new');
-    setCurrentPage(newPage)
-    const a = await fetch(`http://127.0.0.1:1337/job?page=${newPage}`,{
-			method: 'GET'
-		})
-		const content = await a.json()
-    const total = Math.ceil((content.count) / 4)
-    console.log(content,'jk');
-    setTotalPage(total)
-		setData(content.List)
+  const handlePageChange = async (page:number) => {
+    setCurrentPage(page)
+    if((select.length > 0 )) {
+      console.log(select,page,'sdsd');
+      let search = await fetch(`http://127.0.0.1:1337/job/search?page=${page}`,{
+      method: 'POST',
+      headers: {
+        'Authorization' : `Bearer ${localStorage.getItem('authToken')}`
+      },
+      body: JSON.stringify({title:select})
+      });
+      let content = await search.json()
+      let total = Math.ceil((content.count) / 4)
+      setTotalPage(total)
+      setData(content.data.rows)
+    } else {
+      let a = await fetch(`http://127.0.0.1:1337/job?page=${page}`,{
+        method: 'GET'
+      })
+      let content = await a.json()
+      let total = Math.ceil((content.count) / 4)
+      setTotalPage(total)
+      setData(content.List)
+    }
   };
   const likePost = async () => {
     if(post) {
@@ -115,7 +127,7 @@ function Apply() {
                   <Card.Body>
                     <div className="flex flex-row">
                       <div className="flex flex-col">
-                        <span className="text-lg">company name: {post.likedByUsers}</span>
+                        <span className="text-lg">company name: {post.company}</span>
                         <span className="text-lg">Workplace type: {post.workplaceType}</span>
                         <span className="text-lg">Job location: {post.jobLocation}</span>
                       </div>
@@ -174,14 +186,13 @@ function Apply() {
                               <h1>{post.title}</h1>
                               <div className="flex absolute right-9">
                                 <img src="like.svg" className="h-4 mt-1 mr-1" />
-                                <span className="">{post.likeByUsers.length}</span>
+                                <span className="">{(totalLike) ? (totalLike) : post.likeByUsers}</span>
                               </div>
                             </div>
                             <div className="flex flex-col">
                               <span>Company:{post.company}</span>
                               <span>Location:{post.jobLocation}</span>
                             </div>
-
                           </div>
                         </Card.Body>
                       </Card>
@@ -190,7 +201,7 @@ function Apply() {
                 }
                 </div>
                 <div className="my-5 flex justify-center">
-                  <Pagination onChange={handlePageChange} className="w-96" total={totalPage} initialPage={1} />
+                  <Pagination onChange={(page:number)=>{setCurrentPage(page);handlePageChange(page);}} className="w-96" total={totalPage} initialPage={currentPage} />
                 </div>
               </div>
             </div>

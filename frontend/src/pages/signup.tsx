@@ -38,9 +38,9 @@ export default function Signup() {
                 position: toast.POSITION.TOP_RIGHT
             });
             if(content.role == 'manager') {
-                router.push({pathname:'post'})
+                router.push('post')
             } else {
-                router.push({pathname:'addMore'})
+                router.push('apply')
             }
         } else if(a.status == 404) {
             toast.error('Email is Invalid', {

@@ -42,7 +42,7 @@ export default function ListJob() {
 					data && data.map((post,index)=> {
 
 						return (
-							<Card css={{ mw: "900px" }} isHoverable isPressable>
+							<Card css={{ mw: "900px" }} isHoverable isPressable key={index}>
 								<Card.Body>
 
 									<div key={index} className="flex gap-3 flex-col">

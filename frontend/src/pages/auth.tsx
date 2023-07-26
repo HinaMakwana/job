@@ -44,7 +44,11 @@ function Auth() {
                 toast.success('signUp successfully', {
                     position: toast.POSITION.TOP_RIGHT
                 });
-                router.push('signup')
+                if(content.User.role=='client'){
+                    router.push({pathname:'addMore',query: {id:content.User.id}})
+                } else {
+                    router.push('signup')
+                }
             } else if(a.status == 409) {
                 toast.warning('User is already exist',{
                     position: toast.POSITION.TOP_RIGHT
@@ -64,31 +68,23 @@ function Auth() {
         <div>
             <div className="">
                 <Navbar variant="sticky" className="lg:px-32 md:px-24 sm:px-16">
-                <Navbar.Brand
-                css={{
-                    "@xs": {
-                    w: "12%",
-                    },
-                }}
-                >
-                    <img src="logo.jpg" alt="logo" className="h-16" />
-                    <Text b color="inherit">
-                    JobPortal
-                    </Text>
-                </Navbar.Brand>
-                <Navbar.Content
-                // enableCursorHighlight
-                css={{gap:'50px'}}
-                >
-                <Navbar.Link href="#" className="hover:opacity-100 opacity-50">
-                    {/* <button className='border-2 w-32 p-2 rounded-lg bg-sky-100 hover:bg-sky-700'>My post</button> */}
-                </Navbar.Link>
-                </Navbar.Content>
+                    <Navbar.Brand
+                    css={{
+                        "@xs": {
+                        w: "12%",
+                        },
+                    }}
+                    >
+                        <img src="logo.jpg" alt="logo" className="h-16" />
+                        <Text b color="inherit">
+                        JobPortal
+                        </Text>
+                    </Navbar.Brand>
                 </Navbar>
             </div>
-            <div className=" bg-gradient-to-r from-gray-500 to-gray-500 -mt-5 h-[92.4vh]">
+            <div className=" bg-gradient-to-r from-gray-500 to-gray-500 -mt-5 h-screen">
                 <div className='flex justify-center mt-5'>
-                    <form className="bg-white flex flex-col gap-1 border-2 p-10 rounded-lg mt-36 shadow-md shadow-amber-50">
+                    <form className="bg-white flex flex-col gap-1 border-2 p-10 rounded-lg mt-20 shadow-md shadow-amber-50">
                         <div>
                             <span className='text-5xl'>Join your Community</span>
                         </div>

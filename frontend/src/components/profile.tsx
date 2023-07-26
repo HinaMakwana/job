@@ -1,6 +1,9 @@
 import { Dropdown, Navbar, Text } from '@nextui-org/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 interface profile {
 	firstName : string,
 	lastName: string,
@@ -25,6 +28,32 @@ function Profile() {
 		console.log(result.user);
 		setData(result.user)
 	}
+  let logOut = async () => {
+    let out = await fetch('http://127.0.0.1:1337/user/logout',{
+      method: 'POST',
+      headers: {
+        Authorization : `Bearer ${localStorage.getItem('authToken')}`
+      }
+    });
+    let result = await out.json();
+    console.log(result);
+    if(result.status == 404) {
+      toast.warning('User not found',{
+        position: 'top-right'
+      })
+
+    } else if(result.status == 500) {
+      toast.error('Server error',{
+        position: 'top-right'
+      })
+    } else if(result.status == 200) {
+      toast.success('Logout Successfully',{
+        position: 'top-right'
+      })
+      localStorage.removeItem('authToken');
+      router.push('signup');
+    }
+  }
   return (
 	<div>
 		<Navbar variant="sticky" className="lg:px-32 md:px-24 sm:px-16">
@@ -57,16 +86,16 @@ function Profile() {
               aria-label="User menu actions"
               color="secondary"
               onAction={(actionKey) => {
-				if(actionKey == 'settings'){
+                if(actionKey == 'settings'){
+                  router.push('myProfile')
+                } else if(actionKey == 'post') {
+                  router.push('listJob')
+                } else if(actionKey == 'saved') {
 
-				} else if(actionKey == 'post') {
-					router.push('listJob')
-				} else if(actionKey == 'saved') {
+                } else if(actionKey == 'logout') {
 
-				} else if(actionKey == 'logout') {
-
-				}
-			  }}
+                }
+			        }}
             >
               <Dropdown.Item key="profile" css={{ height: "$18" }}>
                 <Text b color="inherit" css={{ d: "flex" }}>
@@ -76,27 +105,38 @@ function Profile() {
                   {data && data.email}
                 </Text>
               </Dropdown.Item>
-              <Dropdown.Item key="settings" withDivider>
-                My Profile
-              </Dropdown.Item>
-			  { data &&
-			  	(data.role == 'manager') ?
-				(
-				<Dropdown.Item key="post" withDivider>
-					My Posts
-				</Dropdown.Item>
-				):
-				(
-				<Dropdown.Item key="saved" withDivider>
-					Saved job
-				</Dropdown.Item>
-				)
-			  }
+              {
+                data && (data.role == 'client') ?
+                (
+                  <Dropdown.Item key="settings" withDivider>
+                    My Profile
+                  </Dropdown.Item>
+                ) :
+                (
+                  <Dropdown.Item className='-mt-8'>
+
+                  </Dropdown.Item>
+                )
+              }
+                { data &&
+                  (data.role == 'manager') ?
+                  (
+                  <Dropdown.Item key="post" withDivider>
+                    My Posts
+                  </Dropdown.Item>
+                  ):
+                  (
+                    <Dropdown.Item key="saved" withDivider>
+                      Saved job
+                    </Dropdown.Item>
+                  )
+                }
+
               <Dropdown.Item key="help_and_feedback" withDivider>
                 Help & Feedback
               </Dropdown.Item>
               <Dropdown.Item key="logout" withDivider color="error">
-                Log Out
+                <button onClick={logOut}>Log Out</button>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>

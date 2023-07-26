@@ -243,7 +243,9 @@ module.exports = {
     listAllUsers: async (req,res) => {
         let lang = req.getLocale()
         try {
-            let findAllUsers = await User.find({isDeleted: false}).select(['firstName','lastName','email','role']).populate('moreData')
+            let findAllUsers = await User.find({isDeleted: false,role: 'client'})
+            .select(['firstName','lastName','email','role'])
+            .populate('moreData')
             return res.status(Statuscode.OK).json({
                 data: findAllUsers
             })
@@ -287,7 +289,7 @@ module.exports = {
                     grade : grade,
                     userData : userId
                 }
-                let validateData = await Education.findOne({educationType: educationType})
+                let validateData = await Education.findOne({educationType: educationType,degreeName:degreeName})
                 if(validateData) {
                     return res.status(Statuscode.CONFLICT).json({
                         status: Statuscode.CONFLICT,
@@ -329,12 +331,12 @@ module.exports = {
     },
     /**
      * @description add more information about user
-     * @Route POST /add/moreInfo
+     * @Route POST /add/moreInfo/:id
      */
     addMoreInfo : async (req,res) => {
         const lang = req.getLocale()
-        const userId = req.userData.userId
         try {
+            const userId = req.params.id
             let user = await sails.helpers.commonFun(userId)
             let {Headline, Skill, Location} = req.body ;
             if(user.role == 'client') {

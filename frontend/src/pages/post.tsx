@@ -122,7 +122,7 @@ function Post() {
 				toast.success('Job posted successfully',{
 					position:'top-right'
 				})
-				router.push({pathname:'success',query:{email: router.query.email}})
+				router.push('success')
 			} else if(a.status == 409) {
 				toast.warning('Title is already added by you',{
 					position: 'top-right'
@@ -173,7 +173,7 @@ function Post() {
 										<div  className="absolute top-full left-0 w-full h-56 bg-white border-2 border-blue-500 z-10 overflow-y-auto">
 											<ul className=" list-none p-0 m-0">
 											{filteredOptions && filteredOptions.map((option, index) => (
-												<li key={index} onClick={() => handleOptionClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
+												<li key={option} onClick={() => handleOptionClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
 												{option}
 												</li>
 											))}
@@ -195,7 +195,7 @@ function Post() {
 										<div className="absolute top-full left-0 w-full h-56 bg-white border-2 border-blue-500 z-10 overflow-y-auto">
 											<ul className=" list-none p-0 m-0">
 											{filtered.map((option, index) => (
-												<li key={index} onClick={() => optionClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
+												<li key={option} onClick={() => optionClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
 												{option}
 												</li>
 											))}
@@ -226,7 +226,7 @@ function Post() {
 										<div className="absolute top-full left-0 w-full h-56 bg-white border-2 border-blue-50 z-10 overflow-y-auto">
 											<ul className=" list-none p-0 m-0">
 											{filterOption.map((option, index) => (
-												<li key={index} onClick={() => handleClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
+												<li key={option} onClick={() => handleClick(option)} className="pl-2 pt-3 cursor-pointer hover:bg-zinc-700">
 												{option}
 												</li>
 											))}

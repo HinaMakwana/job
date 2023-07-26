@@ -1,3 +1,5 @@
+const { log } = require("console");
+
 /**
  * JobController
  *
@@ -156,8 +158,19 @@ module.exports = {
       if(page == undefined) {
         page = 1;
       }
-      let skip = (page - 1) * limit
-      let allJobs = await Job.find({isDeleted:false}).skip(skip).limit(limit).populateAll()
+      let skip = (page - 1) * limit;
+      let allJobs;
+      let allJob = await Job.find({isDeleted:false})
+      .skip(skip)
+      .limit(limit)
+      .populate('postedBy')
+      .populate('likeByUsers')
+      .then((data)=>{
+        data.forEach((like)=>{
+          like.likeByUsers = like.likeByUsers.length
+        })
+        allJobs = data
+      })
       let countAllJob = await Job.count({isDeleted:false})
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
@@ -165,6 +178,7 @@ module.exports = {
           message: message("BadRequest",lang)
         })
       }
+
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
         List: allJobs,
@@ -242,7 +256,7 @@ module.exports = {
     let lang = req.getLocale();
     try {
       let {title} = req.body
-      const limit = 3;
+      const limit = 4;
       let {page} = req.query;
       if(page == undefined) {
         page = 1;
@@ -250,38 +264,52 @@ module.exports = {
       let skip = (page - 1) * limit
       let user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
-      let query1 = `SELECT * FROM "job"
-                 WHERE lower(title) LIKE '%' || lower($1) || '%'
-                 AND "isDeleted" = false`
+
+      let query = ` SELECT
+                  "j"."id",
+                  "j"."title",
+                  "j"."company",
+                  "j"."jobLocation",
+                  COUNT("l"."likedPost") AS "likeByUsers"
+                  FROM "job" AS "j"
+                  FULL JOIN "user" AS "u"
+                  ON "j"."postedBy"="u"."id"
+                  LEFT JOIN "like" AS "l"
+                  ON "j"."id"="l"."likedPost"
+                  WHERE lower("j"."title") LIKE '%' || lower('${title}') || '%'
+                  AND "j"."isDeleted" = false
+                  GROUP BY "j"."id"`
+      const search = await sails.sendNativeQuery(query, [])
       let query2 = ` ORDER BY title LIMIT ${limit} OFFSET ${skip}`
-      let query = query1.concat(query2)
-        const search = await sails.sendNativeQuery(query1, [title])
-        const data = await sails.sendNativeQuery(query,[title])
-        // const search = await Job.find({where: {
-        //   title: {'like' : '%' + title + '%'},
-        //   isDeleted : false
-        // }})
-        // const search = await Job.find({
-        //   where: {
-        //     title: {'contains': title},
-        //     isDeleted: false
-        //   }
-        // });
+      let total = query.concat(query2)
+      const data = await sails.sendNativeQuery(total,[])
+        /* const data = await sails.sendNativeQuery(query,[title])
+        const search = await Job.find({where: {
+          title: {'like' : '%' + title + '%'},
+          isDeleted : false
+        }})
+        const search = await Job.find({
+          where: {
+            title: {'contains': title},
+            isDeleted: false
+          }
+        }); */
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
           data: data,
           count: search.rows.length
         })
       } else {
-        return res.status(Statuscode.SERVER_ERROR).json({
-          status: Statuscode.SERVER_ERROR,
-          message: message("ServerError",lang)
+        return res.status(Statuscode.UNAUTHORIZED).json({
+          status: Statuscode.UNAUTHORIZED,
+          message: message("Unauthorized",lang)
         })
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: message("ServerError",lang)
+        message: message("ServerError",lang) + error,
+        error: error
       })
     }
   },
