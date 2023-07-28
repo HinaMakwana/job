@@ -63,7 +63,7 @@ module.exports = {
     //one-to-many relation
     savedPosts : {
       collection : 'job',
-      via : 'postedBy'
+      via : 'user'
     }
   },
 

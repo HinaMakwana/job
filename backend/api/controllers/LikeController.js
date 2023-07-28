@@ -1,6 +1,3 @@
-const { table } = require("console");
-const { create } = require("domain");
-
 /**
  * LikeController
  *

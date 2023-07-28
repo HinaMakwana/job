@@ -49,8 +49,10 @@ module.exports = {
       collection: 'user',
       via: 'likedPost',
       through: 'like'
+    },
+    user : {
+      model : 'user'
     }
-    
 
 
   },

@@ -1,5 +1,3 @@
-const { log } = require("console");
-
 /**
  * JobController
  *
@@ -226,19 +224,27 @@ module.exports = {
   listOne: async (req,res) => {
     const userId = req.userData.userId
     let lang = req.getLocale();
+    let result;
     try {
       let {id} = req.params
       await sails.helpers.commonFun(userId)
-      let getOneJob = await Job.findOne({id:id}).populate('postedBy').populate('likeByUsers',{where: {id:userId},select:['firstName','lastName','email']})
+      let getOneJob = await Job.findOne({id:id}).populate('postedBy')
+      .populate('likeByUsers',{where: {id:userId},select:['firstName','lastName','email']})
       if(!getOneJob) {
         return res.status(Statuscode.NOT_FOUND).json({
           status: Statuscode.NOT_FOUND,
           message: message("Job.NotFound",lang)
         })
       }
+      if(getOneJob.user == userId) {
+        result = true;
+      } else {
+        result = false;
+      }
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
         data: getOneJob,
+        result : result,
         totalLike: getOneJob.likeByUsers.length
       })
     } catch (error) {
@@ -353,10 +359,23 @@ module.exports = {
     const lang = req.getLocale();
     const userId = req.userData.userId;
     try {
-      let {jobId} = req.body
+      let {jobId} = req.body;
+      let findJob = await Job.findOne({id:jobId,isDeleted:false})
+      if(!findJob) {
+        return res.status(Statuscode.NOT_FOUND).json({
+          message: 'Job post not found'
+        })
+      }
+      let findUser = await User.findOne({id:userId}).populate('savedPosts',{where: {id:findJob.id}})
+      if(findUser.savedPosts.length > 0) {
+        await User.removeFromCollection(userId,'savedPosts',jobId)
+        return res.status(Statuscode.OK).json({
+          message: 'post removed from saved list'
+        });
+      }
       await User.addToCollection(userId,'savedPosts',jobId)
       return res.status(Statuscode.OK).json({
-        message: 'Saved'
+        message: 'Post Saved'
       })
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
