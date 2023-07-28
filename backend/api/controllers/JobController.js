@@ -19,7 +19,7 @@ module.exports = {
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId);
-      let {title, company,workplaceType,jobLocation,jobType,description} = req.body;
+      let {title, company, workplaceType, jobLocation, jobType, description} = req.body;
       if(user.role == 'manager') {
         const result = Job.validateBeforeCreateOrUpdate({
           title,company,workplaceType,jobLocation,jobType,description
@@ -76,8 +76,8 @@ module.exports = {
     try {
       const user = await sails.helpers.commonFun(userId)
       if(user.role == 'manager') {
-        let {title,description,jobId} = req.body
-        let result = Job.validateBeforeCreateOrUpdate({title,description})
+        let {description,jobId} = req.body
+        let result = Job.validateBeforeCreateOrUpdate({description})
         if(result.hasError) {
           return res.status(Statuscode.BAD_REQUEST).json({
             status: Statuscode.BAD_REQUEST,
@@ -91,11 +91,7 @@ module.exports = {
             message: message("Job.NotFound",lang)
           })
         }
-        const data = {
-          title : title,
-          description : description
-        }
-        let updateJob = await Job.update({postedBy: user.id,id: jobId},data).fetch()
+        let updateJob = await Job.update({postedBy: user.id,id: jobId},{description:description}).fetch()
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
           message: message("Job.Updated",lang),
@@ -113,7 +109,6 @@ module.exports = {
         message: message("ServerError",lang)
       })
     }
-
   },
   /**
    * @description delete job post
@@ -123,20 +118,27 @@ module.exports = {
     const userId = req.userData.userId;
     let lang = req.getLocale();
     try {
-      await sails.helpers.commonFun(userId);
+      let user = await sails.helpers.commonFun(userId);
       let { jobId } = req.body
-      let findId = await Job.findOne({id: jobId,isDeleted:false})
-      if(!findId) {
-        return res.status(Statuscode.NOT_FOUND).json({
-          status: Statuscode.NOT_FOUND,
-          message: message("Job.NotFound",lang)
-        })
-      }
-      const deleteJob = await Job.update({id: findId.id},{isDeleted: true}).fetch()
-      if(deleteJob) {
-        return res.status(Statuscode.OK).json({
-          status: Statuscode.OK,
-          message: message("Job.Deleted",lang),
+      if(user.role == 'manager') {
+        let findId = await Job.findOne({id: jobId,isDeleted:false})
+        if(!findId) {
+          return res.status(Statuscode.NOT_FOUND).json({
+            status: Statuscode.NOT_FOUND,
+            message: message("Job.NotFound",lang)
+          })
+        }
+        const deleteJob = await Job.update({id: findId.id},{isDeleted: true}).fetch()
+        if(deleteJob) {
+          return res.status(Statuscode.OK).json({
+            status: Statuscode.OK,
+            message: message("Job.Deleted",lang),
+          })
+        }
+      } else {
+        return res.status(Statuscode.UNAUTHORIZED).json({
+          status: Statuscode.UNAUTHORIZED,
+          message: 'unauthorized'
         })
       }
     } catch (error) {
@@ -178,7 +180,6 @@ module.exports = {
           message: message("BadRequest",lang)
         })
       }
-
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
         List: allJobs,
@@ -265,7 +266,7 @@ module.exports = {
       let user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
 
-      let query = ` SELECT
+      let query = `SELECT
                   "j"."id",
                   "j"."title",
                   "j"."company",
@@ -344,4 +345,44 @@ module.exports = {
       })
     }
   },
+  /**
+   * @description save post in user account
+   * @route (POST save/post)
+   */
+  saveJob: async (req,res) => {
+    const lang = req.getLocale();
+    const userId = req.userData.userId;
+    try {
+      let {jobId} = req.body
+      await User.addToCollection(userId,'savedPosts',jobId)
+      return res.status(Statuscode.OK).json({
+        message: 'Saved'
+      })
+    } catch (error) {
+      return res.status(Statuscode.SERVER_ERROR).json({
+        status: Statuscode.SERVER_ERROR,
+        message: message('ServerError',lang)
+      })
+    }
+  },
+  /**
+   * @description remove post from saved list
+   * @route (PATCH remove/post)
+   */
+  removeJob: async (req,res) => {
+    const lang = req.getLocale();
+    const userId = req.userData.userId;
+    try {
+      let {jobId} = req.body
+      await User.removeFromCollection(userId,'savedPosts',jobId)
+      return res.status(Statuscode.OK).json({
+        message: 'removed from saved list'
+      })
+    } catch (error) {
+      return res.status(Statuscode.SERVER_ERROR).json({
+        status: Statuscode.SERVER_ERROR,
+        message: message('ServerError',lang)
+      })
+    }
+  }
 };

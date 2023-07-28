@@ -8,7 +8,8 @@ interface profile {
 	firstName : string,
 	lastName: string,
 	email: string,
-	role: string
+	role: string,
+  imageUrl: string
 }
 function Profile() {
 	const [action,setAction] = useState<any>()
@@ -77,7 +78,7 @@ function Profile() {
             <Navbar.Item>
               <Dropdown.Trigger>
                 <div className="flex flex-row">
-                  <img src="user.svg" className="h-10" />
+                  <img src={(data && data.imageUrl) ? data.imageUrl : 'user.svg'} className="h-10 border-2 p-1 rounded-full" />
                   <Text className="m-auto pl-3 font-bold hover:scale-105" style={{color:'royalblue'}}>{data && data.firstName + ' ' + data.lastName}</Text>
                 </div>
               </Dropdown.Trigger>
@@ -89,11 +90,11 @@ function Profile() {
                 if(actionKey == 'settings'){
                   router.push('myProfile')
                 } else if(actionKey == 'post') {
+                  {(router.pathname == '/listJob')? router.push('post') : router.push('listJob')}
                   router.push('listJob')
                 } else if(actionKey == 'saved') {
-
+                  router.push('savedPost')
                 } else if(actionKey == 'logout') {
-
                 }
 			        }}
             >
@@ -121,9 +122,9 @@ function Profile() {
                 { data &&
                   (data.role == 'manager') ?
                   (
-                  <Dropdown.Item key="post" withDivider>
-                    My Posts
-                  </Dropdown.Item>
+                    <Dropdown.Item key="post" withDivider>
+                      {(router.pathname == '/listJob')? 'Add Post' : 'My Post'}
+                    </Dropdown.Item>
                   ):
                   (
                     <Dropdown.Item key="saved" withDivider>

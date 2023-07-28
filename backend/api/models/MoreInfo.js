@@ -19,7 +19,6 @@ module.exports = {
     Location : {
       type : 'string'
     },
-    
     //one-to-one relation
     user : {
       model : 'user'

@@ -34,6 +34,7 @@ const options:type[] = [
 {value: "degree",label: "degree"}
 ];
 function EditProfile() {
+	const [value,setValue] = useState<any>()
 	const [profile,setProfile] = useState<profileData>();
 	const [selectedOption, setSelectedOption] = useState<type>();
 	const [display,setDisplay] = useState(false);
@@ -111,6 +112,63 @@ function EditProfile() {
 			}
 		} else {
 			alert('select eductionType first');
+		}
+	};
+	const handleImgChange = (e:ChangeEvent) => {
+    let target = e.target as HTMLInputElement
+		let files = target.files;
+		if (!files || !files.length) {
+			alert("Please select a file!");
+		} else {
+			let file = files[0]
+			setValue(file)
+		}
+	};
+	const submitData = async (e:any) => {
+		e.preventDefault();
+		const formData = new FormData();
+		formData.append('image',value);
+		let a = await fetch('http://127.0.0.1:1337/uploadImage',{
+			method:'POST',
+			headers: {
+				Authorization : `Bearer ${localStorage.getItem('authToken')}`,
+			},
+			body: formData
+		})
+		console.log(await a.json());
+		if(a.status == 400) {
+			toast.warning('Image format is invalid',{
+				position: 'top-right'
+			})
+		} else if(a.status == 500) {
+			toast.error('Server error',{
+				position: 'top-right'
+			})
+		} else if(a.status == 200) {
+			toast.success('profile photo updated',{
+				position: 'top-right'
+			})
+		}
+	}
+	const deleteData = async () => {
+		let a = await fetch('http://127.0.0.1:1337/removePhoto',{
+			method:'PATCH',
+			headers: {
+				Authorization : `Bearer ${localStorage.getItem('authToken')}`,
+			}
+		})
+		if(a.status == 500) {
+			toast.error('Server error',{
+				position: 'top-right'
+			})
+		} else if(a.status == 200) {
+			toast.success('Profile photo is removed',{
+				position: 'top-right'
+			})
+		} else if(a.status == 400) {
+			toast.error('Profile photo is already deleted',{
+				position: 'top-right'
+			})
 		}
 	}
 	useEffect(()=> {
@@ -298,6 +356,18 @@ function EditProfile() {
 							</div>
 						)
 					}
+				</div>
+				<div className='border-2 mt-5 mx-20 p-10 bg-white rounded-xl '>
+					<div>
+						<Text className='text-xl font-bold'>Change Profile Photo</Text>
+					</div>
+					<div className='mt-5 flex justify-center'>
+						<input type='file' name='file' id='file' onChange={handleImgChange} accept='image/*' />
+					</div>
+					<div className='mt-5'>
+						<button onClick={submitData} className='border-2 px-9 py-2 rounded-xl bg-blue-500 hover:bg-blue-700'>Save</button>
+						<button onClick={deleteData} className='border-2 px-9 py-2 rounded-xl bg-blue-500 hover:bg-blue-700'>Remove Photo</button>
+					</div>
 				</div>
 			</div>
 		</div>

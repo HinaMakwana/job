@@ -20,6 +20,11 @@ module.exports.routes = {
     'POST /add/education' : 'UserController.addEducation',
     'POST /add/moreInfo/:id' : 'UserController.addMoreInfo',
     'PATCH /update/profile' : 'UserController.updateProfile',
+    'GET /list' : 'UserController.listSavedPost',
+
+    //profileController routes
+    'POST /uploadImage' : 'ProfileController.changeProfilePic',
+    'PATCH /removePhoto' : 'ProfileController.removeProfilePhoto',
 
     //jobController routes
     'POST /job/post' : 'JobController.post',
@@ -30,6 +35,8 @@ module.exports.routes = {
     'POST /job/search' : 'JobController.searchJob',
     'GET /job/listone/:id' : 'JobController.listOne',
     'POST /apply' : 'JobController.applyJob',
+    'POST /save/post' : 'JobController.saveJob',
+    'PATCH /remove/post' : 'JobController.removeJob',
 
     //LikeController routes
     'POST /like/:id' : 'LikeController.likeUnlike',

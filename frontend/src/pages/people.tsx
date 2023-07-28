@@ -51,18 +51,18 @@ function People() {
                         <Card.Body>
                           <div className="flex gap-3 flex-row">
                             <div className="pl-10">
-                              <img src='user.svg' className='h-24' />
-							  <span className='ml-5'>{ user.moreData && user.moreData.Headline}</span>
+                              <img src={user.imageUrl ? user.imageUrl : 'user.svg'} className='h-24 border-2 rounded-full' />
+							  							<span className=''>{ user.moreData && user.moreData.Headline}</span>
                             </div>
                             <div className="flex flex-col">
-								<div className='flex flex-row gap-2 text-2xl pl-14'>
-									<Text>{user.firstName}</Text>
-									<Text>{user.lastName}</Text>
-								</div>
-								<div className='pl-14 pt-5'>
-									<Text>Email: {user.email}</Text>
-									<Text>Role: {user.role}</Text>
-								</div>
+															<div className='flex flex-row gap-2 text-2xl pl-14'>
+																<Text>{user.firstName}</Text>
+																<Text>{user.lastName}</Text>
+															</div>
+															<div className='pl-14 pt-5'>
+																<Text>Email: {user.email}</Text>
+																<Text>Role: {user.role}</Text>
+															</div>
                             </div>
                           </div>
                         </Card.Body>

@@ -60,6 +60,11 @@ module.exports = {
       collection: 'education',
       via : 'userData'
     },
+    //one-to-many relation
+    savedPosts : {
+      collection : 'job',
+      via : 'postedBy'
+    }
   },
 
   ValidationBeforeCreate : (data) => {

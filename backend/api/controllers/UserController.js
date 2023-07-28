@@ -154,7 +154,7 @@ module.exports = {
         let lang = req.getLocale();
         try {
             let getUserProfile = await User.findOne({id: userId})
-            .select(['firstName','lastName','email','role'])
+            .select(['firstName','lastName','email','role','imageUrl'])
             .populate('likePosts',{omit:['createdAt','updatedAt','isDeleted']})
             .populate('moreData')
             .populate('Education',{omit: ['createdAt','updatedAt']})
@@ -178,7 +178,7 @@ module.exports = {
         try {
             let id = req.params.id
             let userData = await User.findOne({id:id})
-            .select(['firstName','lastName','email','role'])
+            .select(['firstName','lastName','email','role','imageUrl'])
             .populate('likePosts',{omit:['createdAt','updatedAt','isDeleted']})
             .populate('moreData')
             .populate('Education',{omit: ['createdAt','updatedAt']})
@@ -201,6 +201,7 @@ module.exports = {
         const userId = req.userData.userId;
         let lang = req.getLocale();
         try {
+            console.log('fie',req.file('image'));
             const findUser = await User.findOne({id: userId})
             if(!findUser) {
                 return res.status(Statuscode.NOT_FOUND).json({
@@ -244,7 +245,7 @@ module.exports = {
         let lang = req.getLocale()
         try {
             let findAllUsers = await User.find({isDeleted: false,role: 'client'})
-            .select(['firstName','lastName','email','role'])
+            .select(['firstName','lastName','email','role','imageUrl'])
             .populate('moreData')
             return res.status(Statuscode.OK).json({
                 data: findAllUsers
@@ -260,11 +261,11 @@ module.exports = {
      * @Route Post /add/education
      */
     addEducation: async (req,res) => {
-        const lang = req.getLocale()
-        const userId = req.userData.userId
-        const currentyear = new Date().getFullYear()
+        const lang = req.getLocale();
+        const userId = req.userData.userId;
+        const currentyear = new Date().getFullYear();
         try {
-            let user = await sails.helpers.commonFun(userId)
+            let user = await sails.helpers.commonFun(userId);
             let {
                 educationType,
                 instituteName,
@@ -412,4 +413,24 @@ module.exports = {
             })
         }
     },
+    /**
+     * @description list logged in users saved posts
+     * @route (GET /list)
+     */
+    listSavedPost : async (req,res) => {
+        const lang = req.getLocale();
+        const userId = req.userData.userId;
+        try {
+            let findPosts = await User.findOne({id: userId,isDeleted:false,role:'client'})
+            .omit(['token','password','isDeleted','createdAt','updatedAt'])
+            .populate('savedPosts',{omit:['createdAt','updatedAt']})
+            return res.status(Statuscode.OK).json({
+                data: findPosts
+            })
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang) + error
+            })
+        }
+    }
 }

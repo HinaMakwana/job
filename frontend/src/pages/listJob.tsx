@@ -8,6 +8,8 @@ import Profile from "@/components/profile";
 export default function ListJob() {
 	const [data,setData] = useState<any[]>([])
 	const router = useRouter()
+	
+
 	// const token = getCookie('authToken')
 
 	const getData = async () => {

@@ -50,6 +50,8 @@ module.exports = {
       via: 'likedPost',
       through: 'like'
     }
+    
+
 
   },
   validateBeforeCreateOrUpdate : (data) => {

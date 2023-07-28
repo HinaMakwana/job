@@ -10,6 +10,8 @@
     SERVER_ERROR: 500,
   };
 
+  const imageType = [ "image/png", "image/jpg", "image/jpeg", "image/svg+xml", "image/webp","image/avif"]
+
   const WorkType = {
     home : 'work from home',
     office : 'work from office'
@@ -87,4 +89,5 @@
     role,
     validationRule,
     eduType,
+    imageType,
   }

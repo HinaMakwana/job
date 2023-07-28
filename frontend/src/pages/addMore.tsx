@@ -74,7 +74,7 @@ function AddMore() {
 					<div>
 						<h1 className='font-bold text-4xl text-center'>Complete Profile</h1>
 					</div>
-					<div className='flex flex-col px-40 pt-20'>
+					<div className='flex flex-col px-40 pt-10'>
 						<label htmlFor='Headline' className=''>Headline</label>
 						<input name='Headline' onChange={handleChange} id='Headline' required className=' border-b-2' />
 						<label htmlFor='Location' className='mt-5'>Location</label>
@@ -94,8 +94,8 @@ function AddMore() {
 						}
 					</div>
 					<div className='flex flex-row px-40 mt-10 gap-5'>
-						<button className='border-2' onClick={addMoreInfo}>Add To Profile</button>
-						<button className='border-2' onClick={()=>router.push('signup')}>Skip</button>
+						<button className='border-2 p-2 rounded-xl hover:bg-blue-400 hover:scale-105' onClick={addMoreInfo}>Add To Profile</button>
+						<button className='border-2 p-2 px-6 rounded-xl hover:bg-blue-400 hover:scale-105' onClick={()=>router.push('signup')}>Skip</button>
 					</div>
 				</div>
 			</div>

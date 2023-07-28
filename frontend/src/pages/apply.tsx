@@ -3,7 +3,9 @@ import { Card, FormElement, Pagination } from "@nextui-org/react";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react'
-import { NumericLiteral } from "typescript";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 interface post {
   id: string,
   title: string,
@@ -110,6 +112,24 @@ function Apply() {
       console.log(final);
     }
   }
+  const saveJob = async (id:string) => {
+    let res = await fetch('http://127.0.0.1:1337/save/post',{
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`
+      },
+      body: JSON.stringify({jobId:id})
+    })
+    if(res.status==200) {
+      toast.success('Post Saved',{
+        position: 'top-right'
+      })
+    } else {
+      toast.error('server error',{
+        position: 'top-right'
+      })
+    }
+  }
   useEffect(()=>{
     handlePageChange(1)
   },[])
@@ -151,7 +171,7 @@ function Apply() {
                     </div>
                     <div className="flex gap-3 mt-5">
                       <button className="border-2 w-20 hover:bg-blue-600 p-2 rounded-lg" onClick={()=>{sendMail(post.id,post.postedBy.email)}}>Apply</button>
-                      <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg">Save</button>
+                      <button className="border-2 w-20 hover:bg-blue-500 p-2 rounded-lg" onClick={()=>saveJob(post.id)}>Save</button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -179,7 +199,7 @@ function Apply() {
                 {
                   data && data.map((post,index)=> {
                     return (
-                      <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{getPost(post.id)}} key={index}>
+                      <Card css={{ mw: "900px" }} isHoverable isPressable onClick={()=>{router.push({pathname:'listOne',query:{id:post.id}})}} key={index}>
                         <Card.Body>
                           <div className="flex gap-3 flex-col">
                             <div className="">

@@ -24,6 +24,7 @@ module.exports.policies = {
     uploadImage : 'isAuthorized',
     updateProfile  : 'isAuthorized',
     addEducation : 'isAuthorized',
+    listSavedPost : 'isAuthorized'
   },
   JobController : {
     listAllJob:true,
@@ -32,6 +33,9 @@ module.exports.policies = {
   LikeController : {
     '*' : 'isAuthorized',
     test:true
+  },
+  ProfileController : {
+    '*' : 'isAuthorized'
   }
 
 };

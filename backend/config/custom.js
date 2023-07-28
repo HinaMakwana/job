@@ -7,12 +7,12 @@
  * For more information on custom configuration, visit:
  * https://sailsjs.com/config/custom
  */
-const uuid = require('uuid-random')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv').config()
-const nodemailer = require('nodemailer')
-const Validator = require('validatorjs')
+const uuid = require('uuid-random');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
+const nodemailer = require('nodemailer');
+const Validator = require('validatorjs');
 module.exports.custom = {
   uuid,
   bcrypt,
