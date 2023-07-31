@@ -341,7 +341,7 @@ module.exports = {
        await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
         return res.status(Statuscode.OK).json({
           status: Statuscode.OK,
-          message: message("Job.SenMail",lang)
+          message: message("Job.SendMail",lang)
         })
       }
     } catch (error) {

@@ -37,15 +37,16 @@ module.exports = {
     console.log(inputs);
     const mail = inputs.email;
     let result = {};
+    console.log(process.env.USER1,process.env.PASSWORD);
     let transport = await nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
-      auth: { user: process.env.USER, pass: process.env.PASSWORD }
+      auth: { user: process.env.USER1, pass: process.env.PASSWORD }
     });
     // let transport = nodemailer.createTransport({
     //   service: 'gmail',
     //   auth: {
-    //     user:process.env.USER ,
+    //     user:process.env.USER1,
     //     pass:process.env.PASSWORD
     //   }
     // })

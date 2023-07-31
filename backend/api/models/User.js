@@ -45,6 +45,14 @@ module.exports = {
       required: true,
       isIn : [role.manager,role.client]
     },
+    forgetPassToken : {
+      type : 'string',
+      allowNull : true
+    },
+    forgetPassExpTime : {
+      type : 'number',
+      allowNull: true
+    },
     //through association
     likePosts : {
       collection : 'job',

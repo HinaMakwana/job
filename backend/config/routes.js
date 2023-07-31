@@ -15,12 +15,14 @@ module.exports.routes = {
     'POST /user/logout' : 'UserController.logout',
     'GET /user/profile' : 'UserController.myProfile',
     'GET /user/:id' : 'UserController.profile',
-    'POST /user/uploadImage' : 'UserController.uploadImage',
     'GET /list/users' : 'UserController.listAllUsers',
     'POST /add/education' : 'UserController.addEducation',
     'POST /add/moreInfo/:id' : 'UserController.addMoreInfo',
     'PATCH /update/profile' : 'UserController.updateProfile',
     'GET /list' : 'UserController.listSavedPost',
+    'PATCH /forgetPass' : 'UserController.forgetPassword',
+    'PATCH /resetPass' : 'UserController.resetPassword',
+    'PATCH /changePass' : 'UserController.changePassword',
 
     //profileController routes
     'POST /uploadImage' : 'ProfileController.changeProfilePic',

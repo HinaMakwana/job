@@ -5,11 +5,11 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const Statuscode = sails.config.constant.HttpStatusCode;
-const message = sails.config.getMessage
-const path = require('path')
+const message = sails.config.getMessage;
+const path = require('path');
 const fs = require('node:fs');
-const {imageType} = sails.config.constant
-
+const {imageType} = sails.config.constant;
+const cloudinary = sails.config.constant.cloudinary;
 module.exports = {
 
 	/**
@@ -97,6 +97,26 @@ module.exports = {
 				})
 			}
 			let deletePhoto = await User.update({id:userId},{imageUrl:null}).fetch()
+			let imageName = user.imageUrl.split('/')[7].split('.')[0];
+			
+			cloudinary.config({
+				cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+				api_key: process.env.CLOUDINARY_API_KEY,
+				api_secret: process.env.CLOUDINARY_SECRET_KEY
+			})
+
+			await cloudinary.uploader.destroy(imageName,(err,result)=> {
+				if(err) {
+					console.log('error',err);
+					return res.status(Statuscode.SERVER_ERROR).json({
+						status: Statuscode.SERVER_ERROR,
+						message: message('ServerError',lang) + error
+					})
+				}
+				if(result) {
+					console.log('result',result);
+				}
+			})
 			if(deletePhoto) {
 				return res.status(Statuscode.OK).json({
 					status: Statuscode.OK,
@@ -106,7 +126,7 @@ module.exports = {
 		} catch (error) {
 			return res.status(Statuscode.SERVER_ERROR).json({
 				status: Statuscode.SERVER_ERROR,
-				message: message('ServerError',lang)
+				message: message('ServerError',lang) + error
 			})
 		}
 	}

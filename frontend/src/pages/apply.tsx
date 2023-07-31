@@ -25,9 +25,7 @@ function Apply() {
   const [currentPage,setCurrentPage] = useState(1)
   const [select,setSelect] = useState<any>('')
   const [data,setData] = useState<any[]>([])
-  const [post,setPost] = useState<post>()
   const [totalPage,setTotalPage] = useState(10)
-  const [isFill,setFill] = useState(false)
   const [totalLike,setLike] = useState(0)
   const router = useRouter()
 

@@ -24,7 +24,8 @@ module.exports.policies = {
     uploadImage : 'isAuthorized',
     updateProfile  : 'isAuthorized',
     addEducation : 'isAuthorized',
-    listSavedPost : 'isAuthorized'
+    listSavedPost : 'isAuthorized',
+    changePassword : 'isAuthorized',
   },
   JobController : {
     listAllJob:true,

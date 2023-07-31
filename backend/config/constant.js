@@ -1,3 +1,4 @@
+  const cloudinary = require('cloudinary').v2
   const HttpStatusCode = {
     OK: 200,
     CREATED: 201,
@@ -90,4 +91,5 @@
     validationRule,
     eduType,
     imageType,
+    cloudinary,
   }

@@ -48,6 +48,7 @@ module.exports = {
                 role : role
             }
             const createUser = await User.create(data).fetch()
+
             // await sails.helpers.sendMail(email,firstName)
             return res.status(Statuscode.CREATED).json({
                 message : message("User.Created",lang),
@@ -127,6 +128,7 @@ module.exports = {
                 })
             }
             const logoutUser = await User.update({id:userId},{token:null}).fetch()
+
             if(logoutUser){
                 return res.status(Statuscode.OK).json({
                     status: Statuscode.OK,
@@ -194,50 +196,6 @@ module.exports = {
         }
     },
     /**
-     * @description upload profile picture
-     * @route (POST /user/uploadImage)
-     */
-    uploadImage: async (req,res) => {
-        const userId = req.userData.userId;
-        let lang = req.getLocale();
-        try {
-            console.log('fie',req.file('image'));
-            const findUser = await User.findOne({id: userId})
-            if(!findUser) {
-                return res.status(Statuscode.NOT_FOUND).json({
-                    status: Statuscode.NOT_FOUND,
-                    message: message("User.UserNotFound",lang)
-                })
-            }
-            let fileUpload = await sails.helpers.uploadImage(req,'image',`profile/${findUser.firstName}`)
-            if (fileUpload.type.includes('image/')) {
-                fileUpload = fileUpload.fd;
-            } else {
-                return res.status(Statuscode.UNAUTHORIZED).json({
-                    status: Statuscode.UNAUTHORIZED,
-                    message : message("User.Upload",lang)
-                })
-            }
-            let upload = await User.update({id : userId},{imageUrl : fileUpload}).fetch()
-            if(upload) {
-                return res.status(Statuscode.OK).json({
-                    status: Statuscode.OK,
-                    message: message("User.Uploaded",lang)
-                })
-            } else {
-                return res.status(Statuscode.SERVER_ERROR).json({
-                    status: Statuscode.SERVER_ERROR,
-                    message: message("ServerError",lang)
-                })
-            }
-        } catch (error) {
-            return res.status(Statuscode.SERVER_ERROR).json({
-                status: Statuscode.SERVER_ERROR,
-                message: message("ServerError",lang)
-            })
-        }
-    },
-    /**
      * @description list all logged users
      * @Route GET /list/users
      */
@@ -247,6 +205,7 @@ module.exports = {
             let findAllUsers = await User.find({isDeleted: false,role: 'client'})
             .select(['firstName','lastName','email','role','imageUrl'])
             .populate('moreData')
+
             return res.status(Statuscode.OK).json({
                 data: findAllUsers
             })
@@ -430,6 +389,125 @@ module.exports = {
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
                 message: message('ServerError',lang) + error
+            })
+        }
+    },
+    /**
+     * @description forget password api for user
+     * @route (PATCH /forgetPass)
+     */
+    forgetPassword : async (req,res) => {
+        const lang = req.getLocale();
+        try {
+            let { email } = req.body;
+            let findEmail = await User.findOne({email:email, isDeleted: false});
+            if(!findEmail) {
+                return res.status(Statuscode.NOT_FOUND).json({
+                    message: 'Email is invalid'
+                })
+            }
+            let expiryToken = id.uuid();
+            let expiryTime = Math.floor(Date.now()) + 120000;
+            let updateUser = await User.update({email:email},{forgetPassToken:expiryToken,forgetPassExpTime:expiryTime}).fetch()
+            if(updateUser) {
+                return res.status(Statuscode.OK).json({
+                    message: 'Forget password token generated',
+                    token : expiryToken
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang)
+            })
+        }
+    },
+    /**
+     *
+     * @description reset password
+     * @param {Request} req
+     * @param {Response} res
+     * @returns updated pasword in json format
+     * @route (PATCH /resetPass)
+     */
+    resetPassword : async (req,res) => {
+        const lang = req.getLocale();
+        try {
+            let {forgetPassToken,newPassword,confirmPassword} = req.body;
+            let findToken = await User.findOne({forgetPassToken:forgetPassToken})
+            if(!findToken) {
+                return res.status(Statuscode.BAD_REQUEST).json({
+                    message: 'Bad request'
+                })
+            }
+            if(findToken.forgetPassExpTime < Date.now()) {
+                return res.status(Statuscode.FORBIDDEN).json({
+                    message: 'token expired'
+                })
+            }
+            if(newPassword !== confirmPassword) {
+                return res.status(Statuscode.BAD_REQUEST).json({
+                    message: 'password and confirm password must match'
+                })
+            }
+            let pass = await bcrypt.hash(newPassword,10)
+            if(!pass) {
+                return res.status(Statuscode.SERVER_ERROR).json({
+                    message: 'server Error'
+                })
+            }
+            let updatePass = await User.update({email:findToken.email},{
+                password: pass,
+                forgetPassToken: null,
+                forgetPassExpTime: null
+            }).fetch()
+            if(updatePass) {
+                return res.status(Statuscode.OK).json({
+                    message: 'Password updated'
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang) + error
+            })
+        }
+    },
+    /**
+     * @description reset password api for user
+     * @route (PATCH /changePass)
+     */
+    changePassword : async (req,res) => {
+        const lang = req.getLocale();
+        const userId = req.userData.userId;
+        try {
+            let { oldPassword,newPassword,confirmPassword } = req.body;
+            let user = await sails.helpers.commonFun(userId)
+            let comparePass = await bcrypt.compare(oldPassword,user.password)
+            if(!comparePass) {
+                return res.status(Statuscode.BAD_REQUEST).json({
+                    message: 'password invalid'
+                })
+            }
+            //check newpassword and confirmPassword must match
+            if(newPassword !== confirmPassword) {
+                return res.status(Statuscode.BAD_REQUEST).json({
+                    message: 'password and confirm password must match'
+                })
+            }
+            let pass = await bcrypt.hash(newPassword,10)
+            if(!pass) {
+                return res.status(Statuscode.SERVER_ERROR).json({
+                    message: 'server Error'
+                })
+            }
+            let updatePass = await User.update({id:userId},{password:pass}).fetch()
+            if(updatePass) {
+                return res.status(Statuscode.OK).json({
+                    message: 'Password updated'
+                })
+            }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang)
             })
         }
     }

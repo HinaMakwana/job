@@ -103,7 +103,7 @@ export default function Signup() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Label htmlFor="remember" className='text-blue-600'>
-                            <Link href=''>Forget password ?</Link>
+                            <Link href='forgetPass'>Forget password ?</Link>
                         </Label>
                     </div>
                     <Button onClick={submit} type="submit" className="bg-blue-600 hover:bg-blue-200">

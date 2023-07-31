@@ -9,6 +9,7 @@ const Statuscode = sails.config.constant.HttpStatusCode;
 let message = sails.config.getMessage;
 
 module.exports = {
+	
 	/**
 	 * @description like and unlike post only by client
 	 * @Route POST like/:id

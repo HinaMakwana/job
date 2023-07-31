@@ -88,13 +88,14 @@ function Profile() {
               color="secondary"
               onAction={(actionKey) => {
                 if(actionKey == 'settings'){
-                  router.push('myProfile')
+                  router.push('myProfile');
                 } else if(actionKey == 'post') {
                   {(router.pathname == '/listJob')? router.push('post') : router.push('listJob')}
-                  router.push('listJob')
+                  router.push('listJob');
                 } else if(actionKey == 'saved') {
-                  router.push('savedPost')
-                } else if(actionKey == 'logout') {
+                  router.push('savedPost');
+                } else if(actionKey == 'changePass') {
+                  router.push('changePass');
                 }
 			        }}
             >
@@ -135,6 +136,9 @@ function Profile() {
 
               <Dropdown.Item key="help_and_feedback" withDivider>
                 Help & Feedback
+              </Dropdown.Item>
+              <Dropdown.Item key="changePass" withDivider>
+                change Password
               </Dropdown.Item>
               <Dropdown.Item key="logout" withDivider color="error">
                 <button onClick={logOut}>Log Out</button>

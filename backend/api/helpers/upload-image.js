@@ -1,4 +1,4 @@
-const cloudinary = require('cloudinary').v2
+const cloudinary = sails.config.constant.cloudinary;
 
 module.exports = {
 
@@ -56,6 +56,7 @@ module.exports = {
   // }
   fn: async function (inputs) {
     let url = {};
+
     cloudinary.config({
       cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,

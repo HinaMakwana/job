@@ -7,7 +7,6 @@ interface post {
 }
 function SavedPost() {
 	const [data,setData] = useState<post>();
-	const [totalLike,setLike] = useState(0);
 	const router = useRouter();
 	let listPosts = async () => {
 		let res = await fetch('http://127.0.0.1:1337/list',{
