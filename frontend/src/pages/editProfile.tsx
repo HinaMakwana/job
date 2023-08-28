@@ -31,7 +31,7 @@ interface edu {
 const options:type[] = [
 	{value: "SSC (10th)",label: "SSC (10th)"},
 	{value: "HSC (12th)",label: "HSC (12th)"},
-{value: "degree",label: "degree"}
+	{value: "degree",label: "degree"}
 ];
 function EditProfile() {
 	const [value,setValue] = useState<any>()

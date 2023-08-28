@@ -17,7 +17,7 @@ function AddMore() {
 		}))
 	};
 	const handleClick = () => {
-        setValue((preValue:any) => [
+      setValue((preValue:any) => [
 			...preValue,skill
 		]);
     };
@@ -31,20 +31,20 @@ function AddMore() {
 		console.log(result);
 		if(result.status == 500) {
 			toast.error('Server error', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+        position: toast.POSITION.TOP_RIGHT
+      });
 		} else if(result.status == 400) {
 			toast.warning('Bad request', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+        position: toast.POSITION.TOP_RIGHT
+      });
 		} else if(result.status == 401) {
 			toast.error('Unauthorized', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+        position: toast.POSITION.TOP_RIGHT
+      });
 		} else if(result.status == 201) {
 			toast.success('Profile Updated', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+        position: toast.POSITION.TOP_RIGHT
+      });
 			router.push('signup')
 		}
 

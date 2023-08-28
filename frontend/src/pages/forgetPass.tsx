@@ -11,11 +11,11 @@ function ForgetPass() {
 	const [token,setToken] = useState('');
 	const router = useRouter();
 	const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=> {
-		const {name , value} = e.target as HTMLInputElement ;
-        setForm((preform) => ({
-				...preform ,
-				[name] :value,
-				}));
+	const {name , value} = e.target as HTMLInputElement ;
+		setForm((preform) => ({
+		...preform ,
+		[name] :value,
+		}));
   }
 	const handleValue = (e:React.ChangeEvent<HTMLInputElement>) => {
 		const {name , value} = e.target as HTMLInputElement ;

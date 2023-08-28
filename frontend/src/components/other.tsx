@@ -3,8 +3,8 @@ import React, { ChangeEvent, useState } from 'react'
 import Select from "react-select";
 
 interface type {
-    value: string,
-    label:string
+	value: string,
+	label:string
 }
 interface edu {
 	educationType: string,
@@ -15,11 +15,11 @@ interface edu {
 const options:type[] = [
     {value: "SSC (10th)",label: "SSC (10th)"},
     {value: "HSC (12th)",label: "HSC (12th)"},
-	{value: "degree",label: "degree"}
+		{value: "degree",label: "degree"}
   ];
 function other() {
 	const [visible,setVisible] = useState(false)
-    const [selectedOption, setSelectedOption] = useState<type>();
+  const [selectedOption, setSelectedOption] = useState<type>();
 	const [form, setForm] = useState({ instituteName : '',grade : '',year: '',degreeName: null})
 	const [edu,setEdu] = useState<edu>()
 
@@ -48,8 +48,8 @@ function other() {
 		setEdu(final.data)
 	}
 	const handleSelectChange = (selectedOption:any) => {
-        setSelectedOption(selectedOption);
-    };
+    setSelectedOption(selectedOption);
+  };
   return (
 	<div>
 		<button onClick={handler} className='border-2 mt-5'>Add education</button>
