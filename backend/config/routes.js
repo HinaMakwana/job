@@ -37,10 +37,12 @@ module.exports.routes = {
     'POST /job/search' : 'JobController.searchJob',
     'GET /job/listone/:id' : 'JobController.listOne',
     'POST /apply' : 'JobController.applyJob',
-    'POST /save/post' : 'JobController.saveJob',
-    'PATCH /remove/post' : 'JobController.removeJob',
 
     //LikeController routes
     'POST /like/:id' : 'LikeController.likeUnlike',
     'POST /test' : 'LikeController.test',
+
+    //savePost routes
+    'POST /save/post' : 'SavePostController.savePost',
+
 };

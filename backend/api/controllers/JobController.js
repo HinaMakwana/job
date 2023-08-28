@@ -6,7 +6,7 @@
  */
 const id = sails.config.custom;
 const Statuscode = sails.config.constant.HttpStatusCode;
-let message = sails.config.getMessage
+let message = sails.config.getMessage;
 module.exports = {
   /**
    * @description post job for users
@@ -45,7 +45,7 @@ module.exports = {
           postedBy : user.id,
           description : description
         }
-        let postJob = await Job.create(data).fetch()
+        let postJob = await Job.create(data).fetch();
         return res.status(Statuscode.CREATED).json({
           status: Statuscode.CREATED,
           message: message("Job.Posted",lang),
@@ -119,14 +119,14 @@ module.exports = {
       let user = await sails.helpers.commonFun(userId);
       let { jobId } = req.body
       if(user.role == 'manager') {
-        let findId = await Job.findOne({id: jobId,isDeleted:false})
+        let findId = await Job.findOne({id: jobId,isDeleted:false,postedBy: userId})
         if(!findId) {
           return res.status(Statuscode.NOT_FOUND).json({
             status: Statuscode.NOT_FOUND,
             message: message("Job.NotFound",lang)
           })
         }
-        const deleteJob = await Job.update({id: findId.id},{isDeleted: true}).fetch()
+        const deleteJob = await Job.updateOne({id: findId.id,postedBy: userId},{isDeleted: true}).fetch()
         if(deleteJob) {
           return res.status(Statuscode.OK).json({
             status: Statuscode.OK,
@@ -160,14 +160,23 @@ module.exports = {
       }
       let skip = (page - 1) * limit;
       let allJobs;
-      let allJob = await Job.find({isDeleted:false})
+      await Job.find({isDeleted:false})
       .skip(skip)
       .limit(limit)
       .populate('postedBy')
       .populate('likeByUsers')
       .then((data)=>{
         data.forEach((like)=>{
-          like.likeByUsers = like.likeByUsers.length
+          like.likeByUsers = like.likeByUsers.length;
+          like.postedBy = _.omit(
+            like.postedBy,
+            "createdAt",
+            "updatedAt",
+            "password",
+            "token",
+            "forgetPassToken",
+            "forgetPassExpTime"
+          )
         })
         allJobs = data
       })
@@ -199,7 +208,12 @@ module.exports = {
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
-      let allJobs = await Job.find({postedBy:user.id,isDeleted:false}).populate('likeByUsers',{limit:3,select:['firstName','lastName','email']})
+      let allJobs = await Job.find({postedBy:user.id,isDeleted:false})
+      .populate('likeByUsers',
+      {
+        limit:3,
+        select:['firstName','lastName','email']
+      })
       if(!allJobs[0]) {
         return res.status(Statuscode.BAD_REQUEST).json({
           status: Statuscode.BAD_REQUEST,
@@ -213,7 +227,7 @@ module.exports = {
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: message("ServerError",lang)
+        message: message("ServerError",lang) + error
       })
     }
   },
@@ -226,10 +240,11 @@ module.exports = {
     let lang = req.getLocale();
     let result;
     try {
-      let {id} = req.params
-      await sails.helpers.commonFun(userId)
-      let getOneJob = await Job.findOne({id:id}).populate('postedBy')
-      .populate('likeByUsers',{where: {id:userId},select:['firstName','lastName','email']})
+      let {id} = req.params;
+      await sails.helpers.commonFun(userId);
+      let getOneJob = await Job.findOne({id:id,isDeleted: false})
+      .populate('postedBy')
+      .populate('likeByUsers',{where: {id:userId,isDeleted: false},select:['firstName','lastName','email']})
       if(!getOneJob) {
         return res.status(Statuscode.NOT_FOUND).json({
           status: Statuscode.NOT_FOUND,
@@ -241,6 +256,17 @@ module.exports = {
       } else {
         result = false;
       }
+      getOneJob = _.omit(getOneJob,"createdAt",
+        "updatedAt",
+        "user"
+      )
+      getOneJob.postedBy = _.omit(getOneJob.postedBy,"createdAt",
+      "updatedAt",
+      "token",
+      "password",
+      "forgetPassToken",
+      "forgetPassExpTime"
+      )
       return res.status(Statuscode.OK).json({
         status: Statuscode.OK,
         data: getOneJob,
@@ -325,83 +351,33 @@ module.exports = {
    * @route (POST apply)
    */
   applyJob: async (req,res) => {
-    const userId = req.userData.userId
+    const userId = req.userData.userId;
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
       if(user.role === 'client') {
         const {managerEmail,postId} = req.body
-        let findPost = await Job.findOne({id:postId})
+        let findPost = await Job.findOne({id:postId,isDeleted: false})
         if(!findPost) {
           return res.status(Statuscode.NOT_FOUND).json({
             status: Statuscode.NOT_FOUND,
             message: message("Job.NotFound",lang)
           })
         }
-       await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
-        return res.status(Statuscode.OK).json({
-          status: Statuscode.OK,
-          message: message("Job.SendMail",lang)
-        })
+        let sendEmail = await sails.helpers.sendMail(managerEmail,user.email,user.firstName,findPost.title)
+        if(sendEmail.messageId) {
+          return res.status(Statuscode.OK).json({
+            status: Statuscode.OK,
+            message: message("Job.SendMail",lang)
+          })
+        }
       }
     } catch (error) {
       return res.status(Statuscode.SERVER_ERROR).json({
         status: Statuscode.SERVER_ERROR,
-        message: message("ServerError",lang)
+        message: message("ServerError",lang) + error
       })
     }
   },
-  /**
-   * @description save post in user account
-   * @route (POST save/post)
-   */
-  saveJob: async (req,res) => {
-    const lang = req.getLocale();
-    const userId = req.userData.userId;
-    try {
-      let {jobId} = req.body;
-      let findJob = await Job.findOne({id:jobId,isDeleted:false})
-      if(!findJob) {
-        return res.status(Statuscode.NOT_FOUND).json({
-          message: 'Job post not found'
-        })
-      }
-      let findUser = await User.findOne({id:userId}).populate('savedPosts',{where: {id:findJob.id}})
-      if(findUser.savedPosts.length > 0) {
-        await User.removeFromCollection(userId,'savedPosts',jobId)
-        return res.status(Statuscode.OK).json({
-          message: 'post removed from saved list'
-        });
-      }
-      await User.addToCollection(userId,'savedPosts',jobId)
-      return res.status(Statuscode.OK).json({
-        message: 'Post Saved'
-      })
-    } catch (error) {
-      return res.status(Statuscode.SERVER_ERROR).json({
-        status: Statuscode.SERVER_ERROR,
-        message: message('ServerError',lang)
-      })
-    }
-  },
-  /**
-   * @description remove post from saved list
-   * @route (PATCH remove/post)
-   */
-  removeJob: async (req,res) => {
-    const lang = req.getLocale();
-    const userId = req.userData.userId;
-    try {
-      let {jobId} = req.body
-      await User.removeFromCollection(userId,'savedPosts',jobId)
-      return res.status(Statuscode.OK).json({
-        message: 'removed from saved list'
-      })
-    } catch (error) {
-      return res.status(Statuscode.SERVER_ERROR).json({
-        status: Statuscode.SERVER_ERROR,
-        message: message('ServerError',lang)
-      })
-    }
-  }
+  
 };

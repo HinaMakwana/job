@@ -45,7 +45,7 @@ module.exports = {
 							error : err
 						})
 					}
-					if(uploadedFiles.length == 0) {
+					if(uploadedFiles.length === 0) {
 						return res.status(Statuscode.BAD_REQUEST).json({
 							status: Statuscode(BAD_REQUEST),
 							message: 'No image uploaded'
@@ -97,8 +97,10 @@ module.exports = {
 				})
 			}
 			let deletePhoto = await User.update({id:userId},{imageUrl:null}).fetch()
-			let imageName = user.imageUrl.split('/')[7].split('.')[0];
-			
+			// let imageName = user.imageUrl.split('/')[7].split('.')[0];
+			let imageName = user.imageUrl.split('/');
+			imageName = imageName[imageName.length - 1];
+			imageName = imageName.split('.')[0];
 			cloudinary.config({
 				cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
 				api_key: process.env.CLOUDINARY_API_KEY,

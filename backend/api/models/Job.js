@@ -51,7 +51,9 @@ module.exports = {
       through: 'like'
     },
     user : {
-      model : 'user'
+      collection : 'user',
+      via : 'posts',
+      through: 'savePost'
     }
 
 

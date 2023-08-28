@@ -8,7 +8,7 @@ const id = sails.config.custom;
 const bcrypt = sails.config.custom.bcrypt;
 const jwt = sails.config.custom.jwt;
 const Statuscode = sails.config.constant.HttpStatusCode;
-const message = sails.config.getMessage
+const message = sails.config.getMessage;
 module.exports = {
     /**
      * @description register user in database
@@ -17,7 +17,7 @@ module.exports = {
     signup: async (req,res) => {
         try {
             let lang = req.getLocale();
-            let { firstName,lastName, email, password, confirmPassword, role } = req.body
+            let { firstName,lastName, email, password, confirmPassword, role } = req.body;
             let result = User.ValidationBeforeCreate({firstName,lastName,email,password,confirmPassword,role})
             if(result.hasError) {
                 return res.status(Statuscode.BAD_REQUEST).json({
@@ -25,14 +25,14 @@ module.exports = {
                     errors : result
                 })
             }
-            let findUser = await User.findOne({email : email,isDeleted: false})
+            let findUser = await User.findOne({email : email,isDeleted: false});
             if(findUser){
                 return res.status(Statuscode.CONFLICT).json({
                     status: Statuscode.CONFLICT,
                     message: message("User.Exist",lang)
                 })
             }
-            const pass = await bcrypt.hash(password, 10)
+            const pass = await bcrypt.hash(password, 10);
             if(!pass) {
                 return res.status(Statuscode.SERVER_ERROR).json({
                     status: Statuscode.SERVER_ERROR,
@@ -47,7 +47,7 @@ module.exports = {
                 password : pass,
                 role : role
             }
-            const createUser = await User.create(data).fetch()
+            const createUser = await User.create(data).fetch();
 
             // await sails.helpers.sendMail(email,firstName)
             return res.status(Statuscode.CREATED).json({
@@ -80,7 +80,7 @@ module.exports = {
                 })
             }
             const isCompare = await bcrypt.compare(password,findUser.password)
-            if(isCompare === false) {
+            if(!isCompare) {
                 return res.status(Statuscode.FORBIDDEN).json({
                     status: Statuscode.FORBIDDEN,
                     message: message("User.Invalid",lang)
@@ -127,7 +127,7 @@ module.exports = {
                     message: message("User.UserNotFound",lang)
                 })
             }
-            const logoutUser = await User.update({id:userId},{token:null}).fetch()
+            const logoutUser = await User.update({id:userId},{token:null}).fetch();
 
             if(logoutUser){
                 return res.status(Statuscode.OK).json({
@@ -155,7 +155,7 @@ module.exports = {
         const userId = req.userData.userId;
         let lang = req.getLocale();
         try {
-            let getUserProfile = await User.findOne({id: userId})
+            let getUserProfile = await User.findOne({id: userId, isDeleted: false})
             .select(['firstName','lastName','email','role','imageUrl'])
             .populate('likePosts',{omit:['createdAt','updatedAt','isDeleted']})
             .populate('moreData')
@@ -256,13 +256,14 @@ module.exports = {
                         message: message('Education.Confict',lang)
                     })
                 } else {
+
                     let checkYear = await Education.findOne({year:year})
                     if(checkYear) {
                         return res.status(Statuscode.BAD_REQUEST).json({
                             status: Statuscode.BAD_REQUEST,
                             message: message('Education.ConflictYear',lang)
                         })
-                    } else if((year >= currentyear)){
+                    } else if((year > currentyear)){
                         return res.status(Statuscode.BAD_REQUEST).json({
                             status: Statuscode.BAD_REQUEST,
                             message: message('Education.ConflictYear',lang)
@@ -338,8 +339,8 @@ module.exports = {
      * @Route PATCH /update/profile
      */
     updateProfile : async (req,res) => {
-        const lang = req.getLocale()
-        const userId = req.userData.userId
+        const lang = req.getLocale();
+        const userId = req.userData.userId;
         try {
             let user = await sails.helpers.commonFun(userId)
             let {Headline, Skill, Location,firstName, lastName} = req.body ;
@@ -352,7 +353,17 @@ module.exports = {
                 let findData = await MoreInfo.findOne({user:userId})
                 if(findData && user) {
                     let updateInfo = await MoreInfo.update({user:userId},moreData).fetch()
-                    let updateProfile = await User.update({id:userId},{firstName: firstName, lastName: lastName}).fetch()
+                    let updateProfile = await User.updateOne({id:userId},{firstName: firstName, lastName: lastName});
+                    updateProfile = _.omit(
+                        updateProfile,
+                        "createdAt",
+                        "updatedAt",
+                        "password",
+                        "token",
+                        "forgetPassToken",
+                        "forgetPassExpTime",
+                        "moreData"
+                    );
                     return res.status(Statuscode.OK).json({
                         status: Statuscode.OK,
                         data : updateProfile,
@@ -380,8 +391,12 @@ module.exports = {
         const lang = req.getLocale();
         const userId = req.userData.userId;
         try {
-            let findPosts = await User.findOne({id: userId,isDeleted:false,role:'client'})
-            .omit(['token','password','isDeleted','createdAt','updatedAt'])
+            let findPosts = await User.findOne({
+                id: userId,
+                isDeleted:false,
+                role:'client'
+            })
+            .omit(['token','password','isDeleted','createdAt','updatedAt','forgetPassToken','forgetPassExpTime'])
             .populate('savedPosts',{omit:['createdAt','updatedAt']})
             return res.status(Statuscode.OK).json({
                 data: findPosts
@@ -433,7 +448,7 @@ module.exports = {
         const lang = req.getLocale();
         try {
             let {forgetPassToken,newPassword,confirmPassword} = req.body;
-            let findToken = await User.findOne({forgetPassToken:forgetPassToken})
+            let findToken = await User.findOne({forgetPassToken:forgetPassToken,isDeleted :false})
             if(!findToken) {
                 return res.status(Statuscode.BAD_REQUEST).json({
                     message: 'Bad request'
@@ -480,8 +495,8 @@ module.exports = {
         const userId = req.userData.userId;
         try {
             let { oldPassword,newPassword,confirmPassword } = req.body;
-            let user = await sails.helpers.commonFun(userId)
-            let comparePass = await bcrypt.compare(oldPassword,user.password)
+            let user = await sails.helpers.commonFun(userId);
+            let comparePass = await bcrypt.compare(oldPassword,user.password);
             if(!comparePass) {
                 return res.status(Statuscode.BAD_REQUEST).json({
                     message: 'password invalid'
@@ -493,7 +508,7 @@ module.exports = {
                     message: 'password and confirm password must match'
                 })
             }
-            let pass = await bcrypt.hash(newPassword,10)
+            let pass = await bcrypt.hash(newPassword,10);
             if(!pass) {
                 return res.status(Statuscode.SERVER_ERROR).json({
                     message: 'server Error'
@@ -507,7 +522,7 @@ module.exports = {
             }
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
-                message: message('ServerError',lang)
+                message: message('ServerError',lang) + error
             })
         }
     }

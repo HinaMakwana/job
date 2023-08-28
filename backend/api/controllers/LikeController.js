@@ -9,7 +9,7 @@ const Statuscode = sails.config.constant.HttpStatusCode;
 let message = sails.config.getMessage;
 
 module.exports = {
-	
+
 	/**
 	 * @description like and unlike post only by client
 	 * @Route POST like/:id
@@ -20,14 +20,14 @@ module.exports = {
 		try {
 			const user = await sails.helpers.commonFun(userId);
 			if(user.role == 'client') {
-				let postId = req.params.id
-				let findUser = await User.findOne({id: userId})
+				let postId = req.params.id;
+				let findUser = await User.findOne({id: userId,isDeleted: false})
 				if(!findUser) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('User.UserNotFoud',lang)
 					})
 				}
-				let findPost = await Job.findOne({id: postId})
+				let findPost = await Job.findOne({id: postId,isDeleted: false})
 				if(!findPost) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('Job.NotFound',lang)
