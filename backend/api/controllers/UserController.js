@@ -259,7 +259,13 @@ module.exports = {
     const currentyear = new Date().getFullYear();
     try {
       let user = await sails.helpers.commonFun(userId);
-      let { educationType, instituteName, year, grade, degreeName } = req.body;
+      let {
+        educationType,
+        instituteName,
+        year,
+        grade,
+        degreeName
+      } = req.body;
       let result = await Education.ValidationBeforeCreate({
         educationType,
         instituteName,
