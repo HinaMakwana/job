@@ -19,23 +19,35 @@ module.exports = {
 		let lang = req.getLocale();
 		try {
 			const user = await sails.helpers.commonFun(userId);
-			if(user.role == 'client') {
+			if(user.role === 'client') {
 				let postId = req.params.id;
-				let findUser = await User.findOne({id: userId,isDeleted: false})
+				let findUser = await User.findOne({
+					id: userId,
+					isDeleted: false
+				})
 				if(!findUser) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('User.UserNotFoud',lang)
 					})
 				}
-				let findPost = await Job.findOne({id: postId,isDeleted: false})
+				let findPost = await Job.findOne({
+					id: postId,
+					isDeleted: false
+				})
 				if(!findPost) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('Job.NotFound',lang)
 					})
 				}
-				let findLike = await Like.findOne({clients: userId,likedPost:postId})
+				let findLike = await Like.findOne({
+					clients: userId,
+					likedPost:postId
+				})
 				if(findLike) {
-					let destroyLike = await Like.destroy({clients:userId,likedPost:postId}).fetch()
+					let destroyLike = await Like.destroy({
+						clients:userId,
+						likedPost:postId
+					}).fetch()
 					return res.status(Statuscode.OK).json({
 						message : message('Unlike.Post',lang),
 						data: destroyLike
