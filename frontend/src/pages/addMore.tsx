@@ -29,19 +29,19 @@ function AddMore() {
 		});
 		let result = await addProfile.json();
 		console.log(result);
-		if(result.status == 500) {
+		if(result.status === 500) {
 			toast.error('Server error', {
         position: toast.POSITION.TOP_RIGHT
       });
-		} else if(result.status == 400) {
+		} else if(result.status === 400) {
 			toast.warning('Bad request', {
         position: toast.POSITION.TOP_RIGHT
       });
-		} else if(result.status == 401) {
+		} else if(result.status === 401) {
 			toast.error('Unauthorized', {
         position: toast.POSITION.TOP_RIGHT
       });
-		} else if(result.status == 201) {
+		} else if(result.status === 201) {
 			toast.success('Profile Updated', {
         position: toast.POSITION.TOP_RIGHT
       });

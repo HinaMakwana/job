@@ -46,19 +46,19 @@ function ListoneJob() {
 			},
 			body: JSON.stringify({jobId: router.query.id})
 		})
-		if(deletePost.status == 404){
+		if(deletePost.status === 404){
 			toast.warning('post not found',{
 				position: 'top-right'
 			})
-		} else if(deletePost.status == 401) {
+		} else if(deletePost.status === 401) {
 			toast.error('user unAuthorize',{
 				position: 'top-right'
 			})
-		} else if(deletePost.status == 500) {
+		} else if(deletePost.status === 500) {
 			toast.error('Server error',{
 				position: 'top-right'
 			})
-		} else if(deletePost.status == 200) {
+		} else if(deletePost.status === 200) {
 			toast.success('Post deleted successfully',{
 				position: 'top-right'
 			})

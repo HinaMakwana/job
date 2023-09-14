@@ -1,12 +1,8 @@
 import React, { useState } from 'react'
-import { Dropdown, Navbar, Text } from "@nextui-org/react";
-import ListJob from '@/pages/listJob';
 import { useRouter } from 'next/router';
 import Profile from '@/components/profile';
 
 function Success() {
-	const router = useRouter()
-	const [open,setOpen] = useState(false)
   return (
 	<div>
 		<div>

@@ -40,10 +40,12 @@ function WatchProfile() {
 					},
 				}}
 				>
-				<img src="logo.jpg" alt="logo" className="h-16" />
-				<Text b color="inherit">
-					JobPortal
-				</Text>
+					<a href='#'>
+						<img src="logo.jpg" alt="logo" className="h-16" />
+						<Text b color="inherit">
+							JobPortal
+						</Text>
+					</a>
 				</Navbar.Brand>
 				<Navbar.Content
 					css={{

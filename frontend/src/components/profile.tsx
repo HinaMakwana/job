@@ -38,16 +38,16 @@ function Profile() {
     });
     let result = await out.json();
     console.log(result);
-    if(result.status == 404) {
+    if(result.status === 404) {
       toast.warning('User not found',{
         position: 'top-right'
       })
 
-    } else if(result.status == 500) {
+    } else if(result.status === 500) {
       toast.error('Server error',{
         position: 'top-right'
       })
-    } else if(result.status == 200) {
+    } else if(result.status === 200) {
       toast.success('Logout Successfully',{
         position: 'top-right'
       })
@@ -87,14 +87,14 @@ function Profile() {
               aria-label="User menu actions"
               color="secondary"
               onAction={(actionKey) => {
-                if(actionKey == 'settings'){
+                if(actionKey === 'settings'){
                   router.push('myProfile');
-                } else if(actionKey == 'post') {
-                  {(router.pathname == '/listJob')? router.push('post') : router.push('listJob')}
+                } else if(actionKey === 'post') {
+                  {(router.pathname === '/listJob')? router.push('post') : router.push('listJob')}
                   router.push('listJob');
-                } else if(actionKey == 'saved') {
+                } else if(actionKey === 'saved') {
                   router.push('savedPost');
-                } else if(actionKey == 'changePass') {
+                } else if(actionKey === 'changePass') {
                   router.push('changePass');
                 }
 			        }}
@@ -108,7 +108,7 @@ function Profile() {
                 </Text>
               </Dropdown.Item>
               {
-                data && (data.role == 'client') ?
+                data && (data.role === 'client') ?
                 (
                   <Dropdown.Item key="settings" withDivider>
                     My Profile
@@ -121,10 +121,10 @@ function Profile() {
                 )
               }
                 { data &&
-                  (data.role == 'manager') ?
+                  (data.role === 'manager') ?
                   (
                     <Dropdown.Item key="post" withDivider>
-                      {(router.pathname == '/listJob')? 'Add Post' : 'My Post'}
+                      {(router.pathname === '/listJob')? 'Add Post' : 'My Post'}
                     </Dropdown.Item>
                   ):
                   (
