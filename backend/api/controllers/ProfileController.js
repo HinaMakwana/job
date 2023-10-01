@@ -37,6 +37,7 @@ module.exports = {
 					dirname: dirname
 				},
 				async (err,uploadedFiles) => {
+					console.log(uploadedFiles,'1');
 					if(err) {
 						console.log(err);
 						return res.status(Statuscode.BAD_REQUEST).json({
@@ -45,7 +46,7 @@ module.exports = {
 							error : err
 						})
 					}
-					if(uploadedFiles.length == 0) {
+					if(uploadedFiles.length === 0) {
 						return res.status(Statuscode.BAD_REQUEST).json({
 							status: Statuscode(BAD_REQUEST),
 							message: 'No image uploaded'
@@ -59,6 +60,7 @@ module.exports = {
 						})
 					}
 					let mainUrl = await sails.helpers.uploadImage(uploadedFiles[0].fd)
+					console.log(mainUrl,'2');
 					if(mainUrl.hasError) {
 						return res.status(Statuscode.SERVER_ERROR).json({
 							status: Statuscode.SERVER_ERROR,

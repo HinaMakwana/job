@@ -19,7 +19,7 @@ module.exports = {
 		let lang = req.getLocale();
 		try {
 			const user = await sails.helpers.commonFun(userId);
-			if(user.role == 'client') {
+			if(user.role === 'client') {
 				let postId = req.params.id
 				let findUser = await User.findOne({id: userId})
 				if(!findUser) {

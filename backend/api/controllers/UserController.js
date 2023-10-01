@@ -8,15 +8,16 @@ const id = sails.config.custom;
 const bcrypt = sails.config.custom.bcrypt;
 const jwt = sails.config.custom.jwt;
 const Statuscode = sails.config.constant.HttpStatusCode;
-const message = sails.config.getMessage
+const message = sails.config.getMessage;
 module.exports = {
     /**
      * @description register user in database
      * @route (POST /user/signup)
      */
     signup: async (req,res) => {
+        let lang = req.getLocale();
         try {
-            let lang = req.getLocale();
+            console.log(lang,'lang');
             let { firstName,lastName, email, password, confirmPassword, role } = req.body
             let result = User.ValidationBeforeCreate({firstName,lastName,email,password,confirmPassword,role})
             if(result.hasError) {
@@ -57,7 +58,7 @@ module.exports = {
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
                 status: Statuscode.SERVER_ERROR,
-                message: message("ServerError",lang)
+                message: message("ServerError",lang) + error
             })
         }
     },
@@ -240,7 +241,7 @@ module.exports = {
                     error : result.error
                 })
             }
-            if(user.role == 'client') {
+            if(user.role === 'client') {
                 let eduData = {
                     id : id.uuid(),
                     educationType : educationType,
@@ -299,7 +300,7 @@ module.exports = {
             const userId = req.params.id
             let user = await sails.helpers.commonFun(userId)
             let {Headline, Skill, Location} = req.body ;
-            if(user.role == 'client') {
+            if(user.role === 'client') {
                 let eduData = {
                     id : id.uuid(),
                     Headline : Headline,
@@ -343,7 +344,7 @@ module.exports = {
         try {
             let user = await sails.helpers.commonFun(userId)
             let {Headline, Skill, Location,firstName, lastName} = req.body ;
-            if(user.role == 'client') {
+            if(user.role === 'client') {
                 let moreData = {
                     Headline : Headline,
                     Skill : Skill,
@@ -505,6 +506,17 @@ module.exports = {
                     message: 'Password updated'
                 })
             }
+        } catch (error) {
+            return res.status(Statuscode.SERVER_ERROR).json({
+                message: message('ServerError',lang)
+            })
+        }
+    },
+    getMessage: async (req,res) => {
+        try {
+            return res.status(Statuscode.OK).json({
+                message: 'Hello world'
+            })
         } catch (error) {
             return res.status(Statuscode.SERVER_ERROR).json({
                 message: message('ServerError',lang)

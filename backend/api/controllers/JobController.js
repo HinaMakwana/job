@@ -18,7 +18,7 @@ module.exports = {
     try {
       const user = await sails.helpers.commonFun(userId);
       let {title, company, workplaceType, jobLocation, jobType, description} = req.body;
-      if(user.role == 'manager') {
+      if(user.role === 'manager') {
         const result = Job.validateBeforeCreateOrUpdate({
           title,company,workplaceType,jobLocation,jobType,description
         })
@@ -73,7 +73,7 @@ module.exports = {
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId)
-      if(user.role == 'manager') {
+      if(user.role === 'manager') {
         let {description,jobId} = req.body
         let result = Job.validateBeforeCreateOrUpdate({description})
         if(result.hasError) {
@@ -118,7 +118,7 @@ module.exports = {
     try {
       let user = await sails.helpers.commonFun(userId);
       let { jobId } = req.body
-      if(user.role == 'manager') {
+      if(user.role === 'manager') {
         let findId = await Job.findOne({id: jobId,isDeleted:false})
         if(!findId) {
           return res.status(Statuscode.NOT_FOUND).json({
@@ -155,7 +155,7 @@ module.exports = {
     try {
       const limit = 4;
       let {page} = req.query;
-      if(page == undefined) {
+      if(page === undefined) {
         page = 1;
       }
       let skip = (page - 1) * limit;
@@ -236,7 +236,7 @@ module.exports = {
           message: message("Job.NotFound",lang)
         })
       }
-      if(getOneJob.user == userId) {
+      if(getOneJob.user === userId) {
         result = true;
       } else {
         result = false;
@@ -265,7 +265,7 @@ module.exports = {
       let {title} = req.body
       const limit = 4;
       let {page} = req.query;
-      if(page == undefined) {
+      if(page === undefined) {
         page = 1;
       }
       let skip = (page - 1) * limit
