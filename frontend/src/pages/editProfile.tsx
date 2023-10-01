@@ -31,7 +31,7 @@ interface edu {
 const options:type[] = [
 	{value: "SSC (10th)",label: "SSC (10th)"},
 	{value: "HSC (12th)",label: "HSC (12th)"},
-{value: "degree",label: "degree"}
+	{value: "degree",label: "degree"}
 ];
 function EditProfile() {
 	const [value,setValue] = useState<any>()
@@ -84,28 +84,28 @@ function EditProfile() {
 			let final = await res.json();
 			console.log(final);
 			setEdu(final.data)
-			if(final.status == 400) {
+			if(final.status === 400) {
 				toast.warning('entered year is not valid',{
 					position: 'top-right'
 				})
-			} else if(final.status == 409) {
+			} else if(final.status === 409) {
 				toast.warning('Education already added',{
 					position: 'top-right'
 				})
-			} else if(final.status == 401) {
+			} else if(final.status === 401) {
 				toast.error('unauthorized',{
 					position: 'top-right'
 				})
 
-			} else if(final.status == 500) {
+			} else if(final.status === 500) {
 				toast.error('Server error',{
 					position: 'top-right'
 				})
-			} else if(final.status == 201) {
+			} else if(final.status === 201) {
 				toast.success('Added successfully	',{
 					position: 'top-right'
 				})
-			} else if(final.status == 403) {
+			} else if(final.status === 403) {
 				toast.error('validation error',{
 					position: 'top-right'
 				})
@@ -136,15 +136,15 @@ function EditProfile() {
 			body: formData
 		})
 		console.log(await a.json());
-		if(a.status == 400) {
+		if(a.status === 400) {
 			toast.warning('Image format is invalid',{
 				position: 'top-right'
 			})
-		} else if(a.status == 500) {
+		} else if(a.status === 500) {
 			toast.error('Server error',{
 				position: 'top-right'
 			})
-		} else if(a.status == 200) {
+		} else if(a.status === 200) {
 			toast.success('profile photo updated',{
 				position: 'top-right'
 			})
@@ -157,15 +157,15 @@ function EditProfile() {
 				Authorization : `Bearer ${localStorage.getItem('authToken')}`,
 			}
 		})
-		if(a.status == 500) {
+		if(a.status === 500) {
 			toast.error('Server error',{
 				position: 'top-right'
 			})
-		} else if(a.status == 200) {
+		} else if(a.status === 200) {
 			toast.success('Profile photo is removed',{
 				position: 'top-right'
 			})
-		} else if(a.status == 400) {
+		} else if(a.status === 400) {
 			toast.error('Profile photo is already deleted',{
 				position: 'top-right'
 			})
@@ -252,7 +252,7 @@ function EditProfile() {
 											<label htmlFor='grade' className=''>Grade/Percentage/Percentile</label><br />
 											<input name='grade' onChange={handleForm} type='text' id='grade' placeholder={edu.grade} required className='mt-1 border-b-2 rounded-lg' />
 										</div>
-										{ (edu.degreeName != null) &&
+										{ (edu.degreeName !== null) &&
 												<div className=''>
 													<label htmlFor='degreeName' className=''>Degree Name</label><br />
 													<input name='degreeName' onChange={handleForm} type='text' id='degreeName' placeholder={edu.degreeName} required className='rounded-lg border-b-2 mt-1' />
@@ -288,7 +288,7 @@ function EditProfile() {
 									<label htmlFor='grade' className=''>Grade/Percentage/Percentile</label><br />
 									<input name='grade' onChange={handleForm} type='text' id='grade' required className='mt-1 border-b-2 rounded-lg' />
 								</div>
-								{ selectedOption && (selectedOption.value == 'degree') &&
+								{ selectedOption && (selectedOption.value === 'degree') &&
 										<div className=''>
 											<label htmlFor='degreeName' className=''>Degree Name</label><br />
 											<input name='degreeName' onChange={handleForm} type='text' id='degreeName' required className='rounded-lg border-b-2 mt-1' />

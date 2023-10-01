@@ -9,7 +9,7 @@ const Statuscode = sails.config.constant.HttpStatusCode;
 let message = sails.config.getMessage;
 
 module.exports = {
-	
+
 	/**
 	 * @description like and unlike post only by client
 	 * @Route POST like/:id
@@ -20,22 +20,39 @@ module.exports = {
 		try {
 			const user = await sails.helpers.commonFun(userId);
 			if(user.role === 'client') {
+<<<<<<< HEAD
 				let postId = req.params.id
 				let findUser = await User.findOne({id: userId})
+=======
+				let postId = req.params.id;
+				let findUser = await User.findOne({
+					id: userId,
+					isDeleted: false
+				})
+>>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
 				if(!findUser) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('User.UserNotFoud',lang)
 					})
 				}
-				let findPost = await Job.findOne({id: postId})
+				let findPost = await Job.findOne({
+					id: postId,
+					isDeleted: false
+				})
 				if(!findPost) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('Job.NotFound',lang)
 					})
 				}
-				let findLike = await Like.findOne({clients: userId,likedPost:postId})
+				let findLike = await Like.findOne({
+					clients: userId,
+					likedPost:postId
+				})
 				if(findLike) {
-					let destroyLike = await Like.destroy({clients:userId,likedPost:postId}).fetch()
+					let destroyLike = await Like.destroy({
+						clients:userId,
+						likedPost:postId
+					}).fetch()
 					return res.status(Statuscode.OK).json({
 						message : message('Unlike.Post',lang),
 						data: destroyLike

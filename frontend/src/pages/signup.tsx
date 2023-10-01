@@ -37,12 +37,12 @@ export default function Signup() {
             toast.success('Login successfully', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            if(content.role == 'manager') {
+            if(content.role === 'manager') {
                 router.push('post')
             } else {
                 router.push('apply')
             }
-        } else if(a.status == 404) {
+        } else if(a.status === 404) {
             toast.error('Email is Invalid', {
                 position: toast.POSITION.TOP_RIGHT
             });

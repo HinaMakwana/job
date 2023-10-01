@@ -68,10 +68,11 @@ module.exports = {
       collection: 'education',
       via : 'userData'
     },
-    //one-to-many relation
+    //many-to-many relation
     savedPosts : {
       collection : 'job',
-      via : 'user'
+      via : 'users',
+      through : 'savePost'
     }
   },
 

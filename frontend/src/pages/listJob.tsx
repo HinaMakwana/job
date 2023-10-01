@@ -2,13 +2,12 @@ import { Card } from "@nextui-org/react";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { type } from "os";
 import Profile from "@/components/profile";
 
 export default function ListJob() {
 	const [data,setData] = useState<any[]>([])
 	const router = useRouter()
-	
+
 
 	// const token = getCookie('authToken')
 

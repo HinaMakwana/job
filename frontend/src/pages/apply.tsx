@@ -1,9 +1,7 @@
 import Profile from "@/components/profile";
 import { Card, FormElement, Pagination } from "@nextui-org/react";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface post {
@@ -30,7 +28,7 @@ function Apply() {
   const router = useRouter()
 
   const handleChange = (e:React.ChangeEvent<FormElement>)=> {
-    const {name , value} = e.target as HTMLInputElement ;
+    const {value} = e.target as HTMLInputElement ;
     console.log('name',value);
     setSelect(value)
   }

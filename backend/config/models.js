@@ -12,6 +12,7 @@
  * them on a project-wide or per-model basis, see:
  * https://sailsjs.com/docs/concepts/models-and-orm/model-settings
  */
+const uuid = require('uuid-random');
 
 module.exports.models = {
 
@@ -53,8 +54,8 @@ module.exports.models = {
   *                                                                          *
   ***************************************************************************/
 
-  migrate: 'safe',
-  // migrate: 'alter',
+  // migrate: 'safe',
+  migrate: 'alter',
 
 
   /***************************************************************************

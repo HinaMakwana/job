@@ -33,10 +33,10 @@ function ListOne() {
     })
     const result = await search.json()
     console.log('result',result);
-    if(result.totalLike == 1) {
+    if(result.totalLike === 1) {
       setFill(true)
     }
-    if(result.result == true) {
+    if(result.result === true) {
       setValue('Unsave')
     }
     setPost(result.data )
@@ -61,7 +61,7 @@ function ListOne() {
       },
       body: JSON.stringify({managerEmail:managerEmail,postId:postId})
     })
-    if(apply.status==200) {
+    if(apply.status===200) {
       toast.success('Apply for job successfully',{
         position: 'top-right'
       })
@@ -80,11 +80,11 @@ function ListOne() {
       body: JSON.stringify({jobId:id})
     })
     let final = await res.json();
-    if(res.status==200) {
+    if(res.status===200) {
       toast.success(final.message,{
         position: 'top-right'
       })
-      if(value == 'Save') {
+      if(value === 'Save') {
         setValue('Unsave');
       } else {
         setValue('Save');
@@ -118,7 +118,7 @@ function ListOne() {
                       <span className="text-lg">Job location: {post.jobLocation}</span>
                     </div>
                     <div className="absolute right-10" onClick={likePost}>
-                      <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" onClick={()=>{if(isFill == true){setFill(false)}else{setFill(true)}}} className={`h-5 w-5 stroke-black stroke-2`} style={{fill : (isFill) ? 'blue' : 'white'}} viewBox="0 0 51.997 51.997">
+                      <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" onClick={()=>setFill((prev)=> !prev)} className={`h-5 w-5 stroke-black stroke-2`} style={{fill : (isFill) ? 'blue' : 'white'}} viewBox="0 0 51.997 51.997">
                       <path d="M51.911,16.242C51.152,7.888,45.239,1.827,37.839,1.827c-4.93,0-9.444,2.653-11.984,6.905
                         c-2.517-4.307-6.846-6.906-11.697-6.906c-7.399,0-13.313,6.061-14.071,14.415c-0.06,0.369-0.306,2.311,0.442,5.478
                         c1.078,4.568,3.568,8.723,7.199,12.013l18.115,16.439l18.426-16.438c3.631-3.291,6.121-7.445,7.199-12.014

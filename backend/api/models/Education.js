@@ -53,7 +53,6 @@ module.exports = {
       return data
     }
     if(validate.fails()) {
-      console.log(1);
       result['hasError'] = true
       result['error'] = validate.errors.all()
     }

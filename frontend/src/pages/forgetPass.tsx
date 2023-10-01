@@ -11,11 +11,11 @@ function ForgetPass() {
 	const [token,setToken] = useState('');
 	const router = useRouter();
 	const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=> {
-		const {name , value} = e.target as HTMLInputElement ;
-        setForm((preform) => ({
-				...preform ,
-				[name] :value,
-				}));
+	const {name , value} = e.target as HTMLInputElement ;
+		setForm((preform) => ({
+		...preform ,
+		[name] :value,
+		}));
   }
 	const handleValue = (e:React.ChangeEvent<HTMLInputElement>) => {
 		const {name , value} = e.target as HTMLInputElement ;
@@ -31,13 +31,13 @@ function ForgetPass() {
 		})
 		let token = await res.json();
 		setToken(token.token);
-		if(res.status == 404) {
+		if(res.status === 404) {
 			toast.error('email is invalid',{
 				position: 'top-right'
 			})
-		} else if(res.status ==  200) {
+		} else if(res.status ===  200) {
 			setOk(false);
-		} else if(res.status == 500) {
+		} else if(res.status === 500) {
 			toast.error('Server error',{
 				position: 'top-right'
 			})
@@ -48,19 +48,19 @@ function ForgetPass() {
 			method: 'PATCH',
 			body: JSON.stringify({...pass,forgetPassToken:token})
 		})
-		if(result.status == 400) {
+		if(result.status === 400) {
 			toast.error('Bad request',{
 				position:'top-right'
 			})
-		} else if(result.status == 403) {
+		} else if(result.status === 403) {
 			toast.error('token expired',{
 				position:'top-right'
 			})
-		} else if(result.status == 500) {
+		} else if(result.status === 500) {
 			toast.error('server error',{
 				position:'top-right'
 			})
-		} else if(result.status == 200) {
+		} else if(result.status === 200) {
 			toast.success('Password updated',{
 				position:'top-right'
 			})

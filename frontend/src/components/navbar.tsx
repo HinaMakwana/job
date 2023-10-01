@@ -1,5 +1,6 @@
 import { Navbar, Text, Link } from "@nextui-org/react";
 export default function Navigation() {
+
   const collapseItems = [
     <div className="flex flex-row gap-3">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 17" className="stroke-1 h-5">
@@ -32,6 +33,7 @@ export default function Navigation() {
             "@xs": {
               w: "12%",
             },
+            cursor: 'pointer'
           }}
         >
           <img src="logo.jpg" alt="logo" className="h-16" />

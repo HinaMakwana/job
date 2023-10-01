@@ -16,8 +16,8 @@ function Post() {
 	const router = useRouter()
 	const [action,setAction] = useState<any>()
 	const [isOpen, setIsOpen] = useState(false);
-    const [Option, setOption] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
+	const [Option, setOption] = useState('');
+	const [searchQuery, setSearchQuery] = useState('');
 	const [open, setOpen] = useState(false)
 	const [val, setValue] = useState('')
 	const [query, setQuery] = useState('')
@@ -123,7 +123,7 @@ function Post() {
 					position:'top-right'
 				})
 				router.push('success')
-			} else if(a.status == 409) {
+			} else if(a.status === 409) {
 				toast.warning('Title is already added by you',{
 					position: 'top-right'
 				})

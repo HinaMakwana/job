@@ -37,6 +37,9 @@ module.exports.policies = {
   },
   ProfileController : {
     '*' : 'isAuthorized'
+  },
+  SavePostController : {
+    '*' : 'isAuthorized'
   }
 
 };
