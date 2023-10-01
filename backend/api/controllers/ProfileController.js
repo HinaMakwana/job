@@ -26,7 +26,7 @@ module.exports = {
         fs.mkdirSync(dirname);
       }
 
-      let filePath = req.file("image").upload(
+      req.file("image").upload(
         {
           adapter: require("skipper-disk"),
           maxBytes: 10000000,
@@ -112,8 +112,7 @@ module.exports = {
         api_secret: process.env.CLOUDINARY_SECRET_KEY,
       });
 
-<<<<<<< HEAD
-			let filePath = req.file('image').upload(
+			req.file('image').upload(
 				{
 					adapter: require('skipper-disk'),
 					maxBytes: 10000000,
@@ -218,31 +217,4 @@ module.exports = {
 			})
 		}
 	}
-=======
-      await cloudinary.uploader.destroy(imageName, (err, result) => {
-        if (err) {
-          console.log("error", err);
-          return res.status(Statuscode.SERVER_ERROR).json({
-            status: Statuscode.SERVER_ERROR,
-            message: message("ServerError", lang) + error,
-          });
-        }
-        if (result) {
-          console.log("result", result);
-        }
-      });
-      if (deletePhoto) {
-        return res.status(Statuscode.OK).json({
-          status: Statuscode.OK,
-          message: "profile photo deleted successfully",
-        });
-      }
-    } catch (error) {
-      return res.status(Statuscode.SERVER_ERROR).json({
-        status: Statuscode.SERVER_ERROR,
-        message: message("ServerError", lang) + error,
-      });
-    }
-  },
->>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
 };
