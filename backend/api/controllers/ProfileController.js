@@ -46,14 +46,14 @@ module.exports = {
           }
           if (uploadedFiles.length === 0) {
             return res.status(Statuscode.BAD_REQUEST).json({
-              status: Statuscode(BAD_REQUEST),
+              status: Statuscode.BAD_REQUEST,
               message: "No image uploaded",
             });
           }
           let fileType = uploadedFiles[0].type;
           if (!imageType.includes(fileType.toString())) {
             return res.status(Statuscode.BAD_REQUEST).json({
-              status: Statuscode(BAD_REQUEST),
+              status: Statuscode.BAD_REQUEST,
               message: "Image type is invalid",
             });
           }
@@ -117,7 +117,7 @@ module.exports = {
           console.log("error", err);
           return res.status(Statuscode.SERVER_ERROR).json({
             status: Statuscode.SERVER_ERROR,
-            message: message("ServerError", lang) + error,
+            message: message("ServerError", lang) + err,
           });
         }
         if (result) {

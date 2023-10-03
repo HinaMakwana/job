@@ -70,7 +70,7 @@ export default function Job() {
             <div>
               <Button
                 onClick={() => {
-                  setShow((prev)=> !prev)
+                  setShow((prev) => !prev);
                 }}
                 className="bg-transparent text-black border-2 border-black rounded-full w-32 hover:text-white hover:border-transparent"
               >
