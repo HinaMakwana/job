@@ -23,6 +23,7 @@ module.exports.routes = {
     'PATCH /forgetPass' : 'UserController.forgetPassword',
     'PATCH /resetPass' : 'UserController.resetPassword',
     'PATCH /changePass' : 'UserController.changePassword',
+    'GET /' : 'UserController.getMessage',
 
     //profileController routes
     'POST /uploadImage' : 'ProfileController.changeProfilePic',

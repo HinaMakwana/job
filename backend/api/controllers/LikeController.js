@@ -20,11 +20,16 @@ module.exports = {
 		try {
 			const user = await sails.helpers.commonFun(userId);
 			if(user.role === 'client') {
+<<<<<<< HEAD
+				let postId = req.params.id
+				let findUser = await User.findOne({id: userId})
+=======
 				let postId = req.params.id;
 				let findUser = await User.findOne({
 					id: userId,
 					isDeleted: false
 				})
+>>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
 				if(!findUser) {
 					return res.status(Statuscode.NOT_FOUND).json({
 						message: message('User.UserNotFoud',lang)

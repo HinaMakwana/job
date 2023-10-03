@@ -17,6 +17,9 @@ module.exports = {
     let lang = req.getLocale();
     try {
       const user = await sails.helpers.commonFun(userId);
+<<<<<<< HEAD
+      let {title, company, workplaceType, jobLocation, jobType, description} = req.body;
+=======
       let {
         title,
         company,
@@ -25,6 +28,7 @@ module.exports = {
         jobType,
         description
       } = req.body;
+>>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
       if(user.role === 'manager') {
         const result = Job.validateBeforeCreateOrUpdate({
           title,company,workplaceType,jobLocation,jobType,description
@@ -83,6 +87,12 @@ module.exports = {
     const userId = req.userData.userId;
     let lang = req.getLocale();
     try {
+<<<<<<< HEAD
+      const user = await sails.helpers.commonFun(userId)
+      if(user.role === 'manager') {
+        let {description,jobId} = req.body
+        let result = Job.validateBeforeCreateOrUpdate({description})
+=======
       const user = await sails.helpers.commonFun(userId);
       if(user.role === 'manager') {
         let {
@@ -90,6 +100,7 @@ module.exports = {
           jobId
         } = req.body;
         let result = Job.validateBeforeCreateOrUpdate({description});
+>>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
         if(result.hasError) {
           return res.status(Statuscode.BAD_REQUEST).json({
             status: Statuscode.BAD_REQUEST,
@@ -140,6 +151,11 @@ module.exports = {
     let lang = req.getLocale();
     try {
       let user = await sails.helpers.commonFun(userId);
+<<<<<<< HEAD
+      let { jobId } = req.body
+      if(user.role === 'manager') {
+        let findId = await Job.findOne({id: jobId,isDeleted:false})
+=======
       let { jobId } = req.body;
       if(user.role === 'manager') {
         let findId = await Job.findOne({
@@ -147,6 +163,7 @@ module.exports = {
           isDeleted:false,
           postedBy: userId
         });
+>>>>>>> 9afe1f2f565dd9a0891cfff02254c671018fd50e
         if(!findId) {
           return res.status(Statuscode.NOT_FOUND).json({
             status: Statuscode.NOT_FOUND,
@@ -187,7 +204,7 @@ module.exports = {
     try {
       const limit = 4;
       let {page} = req.query;
-      if(page == undefined) {
+      if(page === undefined) {
         page = 1;
       }
       let skip = (page - 1) * limit;
